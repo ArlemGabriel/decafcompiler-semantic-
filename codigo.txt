@@ -1,0 +1,8 @@
+int Hello(){
+    if(True){
+        int a;
+		a=25;
+    }else{
+        Print("Hola Mundo");    
+    }
+}

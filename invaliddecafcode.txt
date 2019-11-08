@@ -1,0 +1,30 @@
+main() void {
+  int addresult;;
+  int 5subresult;
+  int multresult;
+  int divresult;
+  string str_a;
+  str_a = "Hola, Mundo!\l";
+  str_b = "Hola, Decaf!;
+  addresult = add(4, 5);
+  subresult = subtraction(5, 3);
+  multresult = multiplication(5,5);
+  divresult = division(4,2);
+  Print(str_a);
+  SPrint(addresult);
+  Print(subresult);
+  Print(multresult);
+  Print(divresult);
+}
+int add(int a, int b) {
+  return a + b;
+
+int subtraction(int a, int b) {
+  return a - b
+}
+int multiplication(int a, int b) {
+  return a * b;
+}
+int division(int a, int b) {
+  return a / b;
+}
