@@ -2,6 +2,7 @@
 //----------------------------- Declaraciones -----------------------------
 #include <iostream>
 #include "funcionesParser.h"
+#include "semanticCheck.h"
 using namespace std;
 
 typedef NodeParseTree * pNodeParseTree;
@@ -25,6 +26,7 @@ void printChilds(pNodeParseTree root, int tabs);
 std::vector<string> treeToPrint;
 
 extern void addError(int pRow,int pColumn,string pError);
+extern void semanticCheck(pNodeParseTree root);
 extern int yylex(void);
 extern void printTable();
 extern int yyparse();
@@ -416,12 +418,14 @@ int main(int argcount, char **argvector)
         yyin=stdin;
     }
 	yyparse();
-  if (flagLexicalError == false && flagSintaxError == false){
-      printTable();
-      printTree(nodo);
-  }else{
-      printTable();
-  }
+	if (flagLexicalError == false && flagSintaxError == false){
+		printTable();
+		printTree(nodo);
+		semanticCheck(nodo);
+
+	}else{
+		printTable();
+	}
 }
 
 
@@ -469,8 +473,7 @@ void printTree(pNodeParseTree root){
 
 void printChilds(pNodeParseTree root, int tabs){
 	for(int i=root->childs.size()-1;i>=0;i--)
-    {
-		//SI funciona
+    {		
 		//Agarra en hijo del parametro nodo root
 		pNodeParseTree child = root->childs.at(i);
 
