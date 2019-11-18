@@ -40,8 +40,8 @@ INVALIDID [0-9|_]+[a-zA-Z|_]+[a-zA-Z|_|0-9]*
 WRONGLONGID [a-zA-Z]{1}[a-zA-Z|0-9|_]{31,}
 CONSINTEGERDEC [0-9]+
 CONSINTEGERHEX 0[xX][a-fA-F0-9]+
-CONSDOUBLEDEC [0-9]+.[0-9]+
-CONSDOUBLECIEN [0-9]+.[0-9]*[Ee](([+]{0,1})|-)[0-9]+
+CONSDOUBLEDEC [0-9]+[.][0-9]+
+CONSDOUBLECIEN [0-9]+[.][0-9]*[Ee](([+]{0,1})|-)[0-9]+
 CONSSTRING \"[^"\\\n]*((?:\\[nt"][^"\\]*)|(?:\\\\[^"\\\n]*))*\"
 SINGLECOMMENT \\\\[^\n\\]+
 MULTICOMMENT \/\*([^*]|(\*+[^*/]))*\*+\/
