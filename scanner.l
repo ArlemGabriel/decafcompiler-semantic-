@@ -34,6 +34,7 @@ FOR for
 RETURN return
 PRINT Print
 FALSE false
+CONSBOOLEAN True|False
 ID [a-zA-Z]{1}[a-zA-Z|0-9|_]{0,30}
 INVALIDID [0-9|_]+[a-zA-Z|_]+[a-zA-Z|_|0-9]*
 WRONGLONGID [a-zA-Z]{1}[a-zA-Z|0-9|_]{31,}
@@ -42,7 +43,6 @@ CONSINTEGERHEX 0[xX][a-fA-F0-9]+
 CONSDOUBLEDEC [0-9]+.[0-9]+
 CONSDOUBLECIEN [0-9]+.[0-9]*[Ee](([+]{0,1})|-)[0-9]+
 CONSSTRING \"[^"\\\n]*((?:\\[nt"][^"\\]*)|(?:\\\\[^"\\\n]*))*\"
-CONSBOOLEAN [True|False]
 SINGLECOMMENT \\\\[^\n\\]+
 MULTICOMMENT \/\*([^*]|(\*+[^*/]))*\*+\/
 SUM "+"
@@ -99,10 +99,10 @@ INVALIDCHAR ['|`|@|#|^|&|"|"|\\|:|?|_|$|¡|¿|´]{1}|[;]{2,}
 {RETURN} {addRow(yylineno,yycolumn,"RETURN","");yycolumn+=yyleng;return RETURN;}
 {PRINT} {addRow(yylineno,yycolumn,"PRINT","");yycolumn+=yyleng;return PRINT;}
 {FALSE} {addRow(yylineno,yycolumn,"FALSE","");yycolumn+=yyleng;return FALSE;}
+{CONSBOOLEAN} {addRow(yylineno,yycolumn,"BOOLEAN",yytext);yycolumn+=yyleng;yylval.sval=strdup(yytext);return CONSBOOLEAN;}
 {ID}    {addRow(yylineno,yycolumn,"ID",yytext);yycolumn+=yyleng;yylval.sval=strdup(yytext);return ID;}
 {CONSINTEGERHEX}    {addRow(yylineno,yycolumn,"HINTEGER",yytext);yycolumn+=yyleng;yylval.sval=strdup(yytext);return CONSINTEGERHEX;}
 {CONSINTEGERDEC}    {addRow(yylineno,yycolumn,"DINTEGER",yytext);yycolumn+=yyleng;yylval.sval=strdup(yytext);return CONSINTEGERDEC;}
-{CONSBOOLEAN} {addRow(yylineno,yycolumn,"BOOLEAN",yytext);yycolumn+=yyleng;yylval.sval=strdup(yytext);return CONSBOOLEAN;}
 {CONSDOUBLEDEC} {addRow(yylineno,yycolumn,"DDOUBLE",yytext);yycolumn+=yyleng;yylval.sval=strdup(yytext);return CONSDOUBLEDEC;}
 {CONSDOUBLECIEN} {addRow(yylineno,yycolumn,"CDOUBLE",yytext);yycolumn+=yyleng;yylval.sval=strdup(yytext);return CONSDOUBLECIEN;}
 {CONSSTRING} {addRow(yylineno,yycolumn,"CSTRING",yytext);yycolumn+=yyleng;yylval.sval=strdup(yytext);return CONSSTRING;}
