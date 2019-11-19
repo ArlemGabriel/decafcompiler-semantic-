@@ -41,9 +41,7 @@ void searchRelevantNodes(pNodeParseTree root){
             tokenTMP=child->token;
             flagGlobalScope=false;
         }
-        else if(child->token=="Variable"|| child->token=="Expr" || child->token=="DIVISION" || child->token=="MODULE" || child->token=="LESSTHAN" || 
-                child->token=="LESSEQUALTHAN" || child->token=="GREATERTHAN" || child->token=="GREATEREQUALTHAN" || child->token=="SUM" || child->token=="SUBTRACTION" || child->token=="MULTIPLICATION" ||
-                child->token=="RETURN" || child->token=="Constant")
+        else if(child->token=="Variable"|| child->token=="Expr"  || child->token=="RETURN" || child->token=="Constant")
             tokenTMP=child->token;        
         else if(child->token=="RBRACE" || child->token=="LBRACE"){
             newElement= new ElementSCH(child->token,child->token, value1,value2,child->row,child->column);
@@ -75,11 +73,11 @@ void searchRelevantNodes(pNodeParseTree root){
             flagGlobalScope=true;
         }
         else{   
-            /*cout<< "child token: "<<child->token <<"\n";
+            /*//cout<< "child token: "<<child->token <<"\n";
             if(child->token=="Type")
-                cout<< "\t"<<tokenTMP <<"\n";          */
+                //cout<< "\t"<<tokenTMP <<"\n";          */
             if((child->token=="Type") && elementValuePosition==0 && (tokenTMP=="Variable" || tokenTMP=="FunctionDecl")){  
-                cout<< "AAAAAAAAAAAA\n";
+                //cout<< "AAAAAAAAAAAA\n";
                 if(child->childs.at(0)->token=="ID")
                     type=child->childs.at(0)->value;
                 else
@@ -91,47 +89,64 @@ void searchRelevantNodes(pNodeParseTree root){
                 elementValuePosition=1;
             }   
             else if((tokenTMP=="Variable" || tokenTMP=="FunctionDecl")  && elementValuePosition==1 && child->token=="ID"){                
-                cout<< "BBBBBBBBBBBBBBB\n";
+                //cout<< "BBBBBBBBBBBBBBB\n";
                 value1=child;                
                 newElement= new ElementSCH(type,tokenTMP, value1,value2,rowTMP,columnTMP);
                 elementsForSemanticCheck.push_back(newElement);
                 restartVariables();
             } else if(child->token=="ID" && elementValuePosition==0 && tokenTMP=="Expr"){         
-                cout<< "CCCCCCCCCCCCCCC\n";
+                //cout<< "CCCCCCCCCCCCCCC\n";
                 value1=child;
                 rowTMP=child->row;
                 columnTMP=child->column;
                 elementValuePosition=1;
             }   
             else if((child->token=="EQUAL" || child->token=="EEQUAL" || child->token=="DISTINCT" ||  child->token=="AND" ||  child->token=="OR" ||  child->token=="NEGATION") && elementValuePosition==1 && tokenTMP=="Expr"){                
-                cout<< "DDDDDDDDDDDDDDDD\n";
+                //cout<< "DDDDDDDDDDDDDDDD\n";
                 type=child->token;                               
                 elementValuePosition=2;
             }
             else if(child->token=="RPAREN"  && elementValuePosition==1 && tokenTMP=="Expr"){                                                
-                cout<< "EEEEEEEEEEEEEEEEEE\n";
+                //cout<< "EEEEEEEEEEEEEEEEEE\n";
                 newElement= new ElementSCH(type,tokenTMP, value1,value2,rowTMP,columnTMP);
                 elementsForSemanticCheck.push_back(newElement);
                 restartVariables();
             }
             else if(elementValuePosition==2 && (tokenTMP=="Expr" || tokenTMP=="Constant")){                
-                cout<< "FFFFFFFFFFFFFFFFFFFF\n";                
+                //cout<< "FFFFFFFFFFFFFFFFFFFF\n";                
                 value2=child;
                 newElement= new ElementSCH(type,"Expr", value1,value2,rowTMP,columnTMP);
+                elementsForSemanticCheck.push_back(newElement);
+                restartVariables();
+            } 
+            else if (elementValuePosition==0 && child->token=="DIVISION" || child->token=="MODULE" || child->token=="LESSTHAN" || child->token=="LESSEQUALTHAN" || child->token=="GREATERTHAN" || 
+                        child->token=="GREATEREQUALTHAN" || child->token=="SUM" || child->token=="SUBTRACTION" || child->token=="MULTIPLICATION"){ 
+                //cout<< "JJJJJJJJJJJJJJJJJJJJJ\n";                                        
+                tokenToAdd=child->token;
+                rowTMP=child->row;
+                columnTMP=child->column;    
+                elementValuePosition=1;                
+            }
+            else if(elementValuePosition==1 && tokenToAdd=="DIVISION" || tokenToAdd=="MODULE" || tokenToAdd=="LESSTHAN" || tokenToAdd=="LESSEQUALTHAN" || tokenToAdd=="GREATERTHAN" || 
+                        tokenToAdd=="GREATEREQUALTHAN" || tokenToAdd=="SUM" || tokenToAdd=="SUBTRACTION" || tokenToAdd=="MULTIPLICATION"){
+                //cout<< "OK\n";    
+                value1=child; 
+                type=child->token;               
+                newElement= new ElementSCH(type,tokenToAdd, value1,value2,rowTMP,columnTMP);
                 elementsForSemanticCheck.push_back(newElement);
                 restartVariables();
             }
             else if(elementValuePosition==0 && (child->token=="CONSINTEGERDEC" || child->token=="CONSINTEGERHEX" || child->token=="CONSDOUBLEDEC" || child->token=="CONSDOUBLECIEN" || 
                     child->token=="CONSSTRING" || child->token=="CONSBOOLEAN"  || child->token=="DISTINCT" ||  child->token=="AND" ||  child->token=="OR" ||  child->token=="NEGATION" ||  
                     child->token=="TNULL")){                
-                cout<< "GGGGGGGGGGGGGGGGGGGGG\n";
+                //cout<< "GGGGGGGGGGGGGGGGGGGGG\n";
                 value1=child;
                 type=child->token;          
                 rowTMP=child->row;
                 columnTMP=child->column;                     
                 elementValuePosition=1;
             } else if(child->token=="RPAREN"  && elementValuePosition==1 && tokenTMP=="Constant"){ 
-                cout<< "HHHHHHHHHHHHHHHHHHHH\n";
+                //cout<< "HHHHHHHHHHHHHHHHHHHH\n";
                 /*if(tokenToAdd!=" ")
                     tokenTMP=tokenToAdd;*/
                 newElement= new ElementSCH(type,tokenToAdd, value1,value2,rowTMP,columnTMP);
@@ -139,27 +154,12 @@ void searchRelevantNodes(pNodeParseTree root){
                 restartVariables();            
             }else if(elementValuePosition==1 && tokenTMP=="Expr" && (type=="CONSINTEGERDEC" || type=="CONSINTEGERHEX" || type=="CONSDOUBLEDEC" || type=="CONSDOUBLECIEN" || 
                     type=="CONSSTRING" || type=="CONSBOOLEAN"  ||  type=="DISTINCT" ||  type=="AND" ||  type=="OR" ||  type=="NEGATION" ||   type=="TNULL")){                
-                cout<< "IIIIIIIIIIIIIII\n";
+                //cout<< "IIIIIIIIIIIIIII\n";
                 value1=child;                
                 newElement= new ElementSCH(type,tokenTMP, value1,value2,rowTMP,columnTMP);
                 elementsForSemanticCheck.push_back(newElement);
                 restartVariables();
-            } else if (elementValuePosition==0 && tokenTMP=="DIVISION" || tokenTMP=="MODULE" || tokenTMP=="LESSTHAN" || tokenTMP=="LESSEQUALTHAN" || tokenTMP=="GREATERTHAN" || 
-                        tokenTMP=="GREATEREQUALTHAN" || tokenTMP=="SUM" || tokenTMP=="SUBTRACTION" || tokenTMP=="MULTIPLICATION"){ 
-                cout<< "JJJJJJJJJJJJJJJJJJJJJ\n";
-                tokenToAdd= tokenTMP;                         
-                rowTMP=child->row;
-                columnTMP=child->column;                     
-                elementValuePosition=1;
-            } else if(elementValuePosition==1 && child->token!="LPAREN" && (tokenToAdd=="DIVISION" || tokenToAdd=="MODULE" || tokenToAdd=="LESSTHAN" || tokenToAdd=="LESSEQUALTHAN" || tokenToAdd=="GREATERTHAN" || 
-                        tokenToAdd=="GREATEREQUALTHAN" || tokenToAdd=="SUM" || tokenToAdd=="SUBTRACTION" || tokenToAdd=="MULTIPLICATION" )){
-                cout<< "KKKKKKKKKKKKKKKKK\n";
-                value1=child; 
-                type=child->token;               
-                newElement= new ElementSCH(type,tokenTMP, value1,value2,rowTMP,columnTMP);
-                elementsForSemanticCheck.push_back(newElement);
-                restartVariables();
-            } 
+            }  
         }
 
         //Si tiene otros hijos los busca
