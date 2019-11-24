@@ -11,7 +11,7 @@ ESCAPEERROR \"[^"\\\n]*((?:\\[^nt"][^"\\]*)|(?:\\\\[^"\\\n]*))*\"
 LQUOTEERROR [^"\\]*((?:\\[nt"][^"\\]*)|(?:\\\\[^"\\]*))*\"$
 RQUOTEERROR \"[^"\\]*((?:\\[nt"][^"\\]*)|(?:\\\\[^"\\]*))*$
 CLASS class
-VOID void
+TVOID void
 STRING string
 THIS this
 WHILE while
@@ -76,7 +76,7 @@ INVALIDCHAR ['|`|@|#|^|&|"|"|\\|:|?|_|$|¡|¿|´]{1}|[;]{2,}
 
 %%
 {CLASS} {addRow(yylineno,yycolumn,"CLASS","");yycolumn+=yyleng;return CLASS;}
-{VOID} {addRow(yylineno,yycolumn,"VOID","");yycolumn+=yyleng;return VOID;}
+{TVOID} {addRow(yylineno,yycolumn,"VOID","");yycolumn+=yyleng;return TVOID;}
 {STRING} {addRow(yylineno,yycolumn,"STRING","");yycolumn+=yyleng;return STRING;}
 {THIS} {addRow(yylineno,yycolumn,"THIS","");yycolumn+=yyleng;return THIS;}
 {WHILE} {addRow(yylineno,yycolumn,"WHILE","");yycolumn+=yyleng;return WHILE;}
