@@ -37,7 +37,7 @@ vector<pElementSCH> PushErrors(vector<pElementSCH> scope)
 //Funcion que imprime los errores semanticos encontrados
 void printSemanticErrors(){
     if(undeclaredvariables.empty()){
-        cout << "Non errors found\n";
+        cout << "No errors found\n";
     }
     else{
         undeclaredvariables=SortErrors(undeclaredvariables);
@@ -60,24 +60,6 @@ void printSemanticErrors(){
         }
     }
     return searchresult;
-}
-
-void PrintScopes(vector<vector<vector<string> > > listofscopes){
-    int positions = listofscopes.size()-1;
-    vector<vector<string> > templist;
-    for(int y=0;y<=positions;y++){
-        templist = listofscopes.at(y);
-        int scopepositions = templist.size()-1;
-        for(int i =0;i<=scopepositions;i++){
-            cout << "Type: " << templist.at(i).at(0)<<"\n";
-            cout << "Token: " << templist.at(i).at(1)<<"\n";
-            cout << "Value1: " << templist.at(i).at(2)<<"\n";
-            cout << "Value2: " << templist.at(i).at(3)<<"\n";
-            cout << "_________________________________________________\n";
-        }
-        cout << "_________________________________________________\n";
-    }
-    cout << "\n \n";
 }
 vector<vector<string> > SearchGlobalVariablesClasses(vector<vector<vector<string> > > tb,string scopevalue){
     int stackpositions = tb.size()-1;
@@ -323,7 +305,6 @@ vector<vector<pElementSCH> > SearchLocalVariables(TablesStack &tb, string scopev
     int stackpositions = tb.GetStackSize()-1;
     int finalscopeposition;
     int newscopeglobalvalue;
-    string finalscopevalue;
     vector<vector<pElementSCH> > listscopes;
     vector<pElementSCH> locals;
     vector<pElementSCH> globals;
@@ -361,7 +342,78 @@ vector<vector<pElementSCH> > SearchLocalVariables(TablesStack &tb, string scopev
     listscopes.push_back(globals);
     return listscopes;
 }
+vector<pElementSCH> SearchGlobalVariablesClasses(vector<pElementSCH> tb,string scopevalue){
+    int stackpositions = tb.size()-1;
+    vector<pElementSCH> globaldecl;
+    vector<pElementSCH> bracestoclose;
+    for(stackpositions;stackpositions>=0;stackpositions--){
+          if(tb.at(stackpositions)->tokenE == "LBRACE" && tb.at(stackpositions)->value1->value == scopevalue){
+                break;
+          }
+          if(tb.at(stackpositions)->tokenE == "RBRACE"){
+                tb.at(stackpositions)->tokenE = "LBRACE";
+                bracestoclose.push_back(tb.at(stackpositions));
+                tb.at(stackpositions)->tokenE = "RBRACE";
+          }
+          if(!bracestoclose.empty() && tb.at(stackpositions)->tokenE =="LBRACE"){
+                int sizebracestoclose = bracestoclose.size()-1;
+                if(tb.at(stackpositions)->value1->value==bracestoclose.at(sizebracestoclose)->value1->value){
+                      bracestoclose.pop_back();
+                }
+          }
+          if(bracestoclose.empty()){
+                globaldecl.push_back(tb.at(stackpositions));
+          }
+    }
+    return globaldecl;
 
+}
+//Busca los scopes locales pertenecientes a un LBRACE y llama a SearchGlobalVariablesClasses
+//para buscar las asignaciones y variables pertenecientes a los scopes globales de clases
+vector<vector<pElementSCH> > SearchLocalVariablesClasses(TablesStack &tb, string scopevalue){
+    int stackpositions = tb.GetStackSize()-1;
+    int finalscopeposition;
+    int newscopeglobalvalue;
+    string finalscopevalue;
+    vector<vector<pElementSCH> > listscopes;
+    vector<pElementSCH> locals;
+    vector<pElementSCH> globals;
+    vector<pElementSCH> bracestoclose;
+
+    for(stackpositions;stackpositions>=0;stackpositions--){
+        if(tb.at(stackpositions)->tokenE == "LBRACE" && tb.at(stackpositions)->value1->value==scopevalue){
+            finalscopeposition = stackpositions-1;
+            newscopeglobalvalue = stoi(scopevalue)-1;
+            finalscopevalue = to_string(newscopeglobalvalue);
+            break;
+        }
+        if(tb.at(stackpositions)->tokenE == "RBRACE"){
+            tb.at(stackpositions)->tokenE = "LBRACE";
+            bracestoclose.push_back(tb.at(stackpositions));
+            tb.at(stackpositions)->tokenE = "RBRACE";
+        }
+        if(!bracestoclose.empty() && tb.at(stackpositions)->tokenE =="LBRACE"){
+            int sizebracestoclose = bracestoclose.size()-1;
+            if(tb.at(stackpositions)->value1->value==bracestoclose.at(sizebracestoclose)->value1->value){
+                bracestoclose.pop_back();
+            }
+        }
+        if(bracestoclose.empty() && tb.at(stackpositions)->tokenE=="Expr"){
+            locals.push_back(tb.at(stackpositions));
+        }
+        if(bracestoclose.empty() && tb.at(stackpositions)->tokenE=="Variable"){
+            locals.push_back(tb.at(stackpositions));
+        }
+    }
+    //locals: lista que guarda las asignaciones y declaraciones locales
+    //listofscopes: lista que guarda las asignaciones y declaraciones tanto globales como locales.
+
+    vector<pElementSCH> globalscopevariables = tb.GetStackFromValue(finalscopeposition);
+    globals = SearchGlobalVariablesClasses(globalscopevariables,finalscopevalue);
+    listscopes.push_back(locals);
+    listscopes.push_back(globals);
+    return listscopes;
+}
 //Valida las variables en scopes globales y locales
 void ScopeCheckingVariables(TablesStack &tb,string typeScope){
     vector<pElementSCH> tbtemp = tb.GetTableStack();
@@ -390,26 +442,26 @@ void ScopeCheckingVariables(TablesStack &tb,string typeScope){
 
         }
     }
-    /*if(typeScope=="Classes"){
-        for(stackpositions;stackpositions>=0;stackpositions--){
-            tempscope = tbtemp.at(stackpositions);
-            int scopepositions = tempscope.size()-1;
-            for(int i =0;i<=scopepositions;i++){
-                if(tempscope.at(i).at(1) == "RBRACE"){
-                    scopevalue =tempscope.at(i).at(2);
-                    tb.Pop();
-                    scopes = SearchLocalVariablesClasses(tb,scopevalue);
-                    scopes = DeleteOtherValues(scopes);
-                    scopes = DivideScopes(scopes);
-                    ChekingVariables(scopes);
-                }
-                if(tempscope.at(i).at(1) != "RBRACE" && !tb.isEmpty()){
-                    tb.Pop();
-                    break;
-                }
+    if(typeScope=="Classes"){
+      for(stackpositions;stackpositions>=0;stackpositions--){
+        //cout << "STACKPOSITIONS: \n"<<stackpositions<<"\n";
+          if(tbtemp.at(stackpositions)->tokenE == "RBRACE"){
+              scopevalue =tbtemp.at(stackpositions)->value1->value;;
+              tb.Pop();
+              //TODO: Verificar que la validacion de variables en las clases funciona.
+              //scopes = SearchLocalVariablesClasses(tb,scopevalue);
+              //scopes = DeleteOtherValues(scopes);
+              //scopes = DivideScopes(scopes);
+              //ChekingVariables(scopes);
+          }else{
+            if(tbtemp.at(stackpositions)->tokenE != "RBRACE" && !tb.isEmpty()){
+                tb.Pop();
             }
-        }
-    }*/
+
+          }
+
+      }
+    }
     printSemanticErrors();
 }
 //Imprimir scopes
