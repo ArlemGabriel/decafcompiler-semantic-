@@ -68,6 +68,13 @@ public:
         vector<pElementSCH> GetTableStack(){
             return tablestack;
         }
+        pElementSCH at(int position){
+            if(0<=position<stacksize){
+                pElementSCH scope;
+                scope = tablestack.at(position);
+                return scope;
+            }
+        }
         /*
         void SetGlobalScope(){
             globalscope = tablestack.at(0);

@@ -24,7 +24,7 @@ pElementSCH newElement;
 void restartVariables(){
     elementValuePosition=0;
     type="";
-    tokenTMP="";    
+    tokenTMP="";
     value1= new NodeParseTree();
     value2= new NodeParseTree();
     rowTMP=-1;
@@ -43,13 +43,13 @@ void searchRelevantNodes(pNodeParseTree root){
             flagGlobalScope=false;
         }
         else if(child->token=="Variable"|| child->token=="Expr"  || child->token=="RETURN" || child->token=="Constant")
-            tokenTMP=child->token;        
-        else if(child->token=="RBRACE" || child->token=="LBRACE"){            
+            tokenTMP=child->token;
+        else if(child->token=="RBRACE" || child->token=="LBRACE"){
             newElement= new ElementSCH(tokenToAdd,child->token, value1,value2,child->row,child->column);
             elementsForSemanticCheck.push_back(newElement);
             tokenToAdd="";
             restartVariables();
-        } else if(child->token=="PRINT" || child->token=="IF" || child->token=="FOR" || child->token=="WHILE"){            
+        } else if(child->token=="PRINT" || child->token=="IF" || child->token=="FOR" || child->token=="WHILE"){
             tokenToAdd=child->token;
         } else if(flagGlobalScope){
             if((child->token=="Type") && elementValuePosition==0 && tokenTMP=="Variable"){
@@ -98,7 +98,7 @@ void searchRelevantNodes(pNodeParseTree root){
                     std::vector<pElementSCH> tempElements;
                     tempElements.push_back(newElement);
                     elementsForSemanticCheck.insert(elementsForSemanticCheck.begin(), tempElements.begin(), tempElements.end());
-                }else{                    
+                }else{
                     elementsForSemanticCheck.push_back(newElement);
                 }
                 restartVariables();
@@ -112,13 +112,13 @@ void searchRelevantNodes(pNodeParseTree root){
                     rowTMP=child->row;
                     columnTMP=child->column;
 
-                    type=childTMP->token;                
+                    type=childTMP->token;
                     newElement= new ElementSCH(type,"Expr", value1,value2,rowTMP,columnTMP);
                     elementsForSemanticCheck.push_back(newElement);
                     restartVariables();
 
                     i++;
-                    //elementValuePosition=1;  
+                    //elementValuePosition=1;
                 } else{
                     value1=child;
                     rowTMP=child->row;
@@ -128,12 +128,12 @@ void searchRelevantNodes(pNodeParseTree root){
                     newElement= new ElementSCH(type,tokenTMP, value1,value2,rowTMP,columnTMP);
                     elementsForSemanticCheck.push_back(newElement);
                     restartVariables();
-                }         
-                              
+                }
+
             }
             /*else if((child->token=="EQUAL" || child->token=="EEQUAL" || child->token=="DISTINCT" ||  child->token=="AND" ||  child->token=="OR" ||  child->token=="NEGATION") && elementValuePosition==1){
                 //cout<< "DDDDDDDDDDDDDDDD\n";
-                type=child->token;                
+                type=child->token;
                 newElement= new ElementSCH(type,"Expr", value1,value2,rowTMP,columnTMP);
                 elementsForSemanticCheck.push_back(newElement);
                 restartVariables();
@@ -244,7 +244,7 @@ void validateScopeFunctions(){
 }
 void semanticCheck(pNodeParseTree root){
     searchRelevantNodes(root);
-    cout<<"Globals\n";
+    /*cout<<"Globals\n";
     for(int i=0; i<globalElementsForSemanticCheck.size();i++){
       cout<< "Type: " <<globalElementsForSemanticCheck.at(i)->type << "\tToken: " <<globalElementsForSemanticCheck.at(i)->tokenE << "\tValue1: " <<globalElementsForSemanticCheck.at(i)->value1->value<<"\n";
     }
@@ -252,9 +252,9 @@ void semanticCheck(pNodeParseTree root){
     for(int i=0; i<elementsForSemanticCheck.size();i++){
       //tb.Push(elementsForSemanticCheck.at(i));
         cout<< "Type: " <<elementsForSemanticCheck.at(i)->type << "\tToken: " <<elementsForSemanticCheck.at(i)->tokenE << "\tValue1: " <<elementsForSemanticCheck.at(i)->value1->value<< "\tValue2: " <<elementsForSemanticCheck.at(i)->value2->value<<"\n";
-    }//*/
+    }*/
     //Llamadas para validar scopes en funciones y variables
-    //validateScopeFunctions();
+    validateScopeFunctions();
 
     //TODO empezar a revisar los nodos de globalElementsForSemanticCheck y elementsForSemanticCheck, y utilizar la pila de tablas
 

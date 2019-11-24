@@ -171,60 +171,6 @@ vector<vector<vector<string> > > SearchLocalVariablesClasses(TablesStack tb, str
     listscopes.push_back(intermediatescopes);
     return listscopes;
 }
-//Busca los scopes globales y locales pertenecientes a un LBRACE
-vector<vector<vector<string> > > SearchLocalVariables(TablesStack tb, string scopevalue){
-    int stackpositions = tb.GetStackSize()-1;
-    int finalscopeposition;
-    int newscopeglobalvalue;
-    string finalscopevalue;
-    vector<vector<vector<string> > > listscopes;
-    vector<vector<string> > tempscope;
-    vector<vector<string> > localdecl;
-    vector<vector<string> > globaldecl;
-    vector<vector<string> > bracestoclose;
-    vector<vector<string> > intermediatescopes;
-    vector<vector<vector<string> > > globalscopes;
-
-    for(stackpositions;stackpositions>=0;stackpositions--){
-        tempscope = tb.GetScope(stackpositions);
-        int scopepositions = tempscope.size()-1;
-        bool searchEnded = false;
-
-        for(int i =0;i<=scopepositions;i++){
-                if(tempscope.at(i).at(1) == "LBRACE" && tempscope.at(i).at(2)==scopevalue){
-                    finalscopeposition = stackpositions-1;
-                    searchEnded = true;
-                }
-                if(tempscope.at(i).at(1) == "RBRACE"){
-                    tempscope.at(i).at(1) = "LBRACE";
-                    bracestoclose.push_back(tempscope.at(i));
-                    tempscope.at(i).at(1) = "RBRACE";
-                }
-                if(!bracestoclose.empty() && tempscope.at(i).at(1)=="LBRACE"){
-                    int sizebracestoclose = bracestoclose.size()-1;
-                    if(tempscope.at(i).at(2)==bracestoclose.at(sizebracestoclose).at(2)){
-                        bracestoclose.pop_back();
-                    }
-                }
-                if(bracestoclose.empty() && tempscope.at(i).at(1)=="Exp"){
-                    intermediatescopes.push_back(tempscope.at(i));
-                }
-                if(bracestoclose.empty() && tempscope.at(i).at(1)=="Variable"){
-                    localdecl.push_back(tempscope.at(i));
-                }
-        }
-        if(searchEnded==true){
-            break;
-        }
-    }
-    vector<vector<vector<string> > > globalscopevariables = tb.GetStackFromValue(finalscopeposition);
-    globaldecl = SearchGlobalVariables(globalscopevariables);
-
-    listscopes.push_back(localdecl);
-    listscopes.push_back(globaldecl);
-    listscopes.push_back(intermediatescopes);
-    return listscopes;
-}
 //Elimina aquellos valores que no son asignaciones o expresiones (declaracion de funciones etc)
 vector<vector<vector<string> > > DeleteOtherValues(vector<vector<vector<string> > > listofscopes){
     int positions = listofscopes.size()-1;
@@ -350,23 +296,83 @@ bool ChekingVariables(vector<vector<vector<string> > > listofscopes){
     }
 
 }*/
+//Busca los scopes globales y locales pertenecientes a un LBRACE
+vector<vector<pElementSCH> > SearchLocalVariables(TablesStack &tb, string scopevalue){
+    int stackpositions = tb.GetStackSize()-1;
+    int finalscopeposition;
+    int newscopeglobalvalue;
+    string finalscopevalue;
+    vector<vector<pElementSCH> > listscopes;
+    vector<pElementSCH> tempscope;
+    vector<pElementSCH> locals;
+    vector<pElementSCH> globaldecl;
+    vector<pElementSCH> bracestoclose;
+    vector<pElementSCH> intermediatescopes;
+
+    vector<vector<vector<string> > > globalscopes;
+
+    for(stackpositions;stackpositions>=0;stackpositions--){
+        if(tb.at(stackpositions)->tokenE == "LBRACE" && tb.at(stackpositions)->value1->value==scopevalue){
+            finalscopeposition = stackpositions-1;
+            break;
+        }
+        if(tb.at(stackpositions)->tokenE == "RBRACE"){
+            tb.at(stackpositions)->tokenE = "LBRACE";
+            bracestoclose.push_back(tb.at(stackpositions));
+            tb.at(stackpositions)->tokenE = "RBRACE";
+        }
+        if(!bracestoclose.empty() && tb.at(stackpositions)->tokenE =="LBRACE"){
+            int sizebracestoclose = bracestoclose.size()-1;
+            if(tb.at(stackpositions)->value1->value==bracestoclose.at(sizebracestoclose)->value1->value){
+                bracestoclose.pop_back();
+            }
+        }
+        if(bracestoclose.empty() && tb.at(stackpositions)->tokenE=="Expr"){
+            locals.push_back(tb.at(stackpositions));
+        }
+        if(bracestoclose.empty() && tb.at(stackpositions)->tokenE=="Variable"){
+            locals.push_back(tb.at(stackpositions));
+        }
+    }
+    //locals lista que guarda las asignaciones y declaraciones locales
+
+    //vector<vector<vector<string> > > globalscopevariables = tb.GetStackFromValue(finalscopeposition);
+    //globaldecl = SearchGlobalVariables(globalscopevariables);
+    //vector<pElementSCH> tablestack
+    listscopes.push_back(locals);
+    //listscopes.push_back(globaldecl);
+    //listscopes.push_back(intermediatescopes);
+    return listscopes;
+}
+
 //Valida las variables en scopes globales y locales
 void ScopeCheckingVariables(TablesStack &tb,string typeScope){
     vector<pElementSCH> tbtemp = tb.GetTableStack();
+    vector<vector<pElementSCH> > scopes;
     int stackpositions = tbtemp.size()-1;
     string scopevalue = " ";
     pElementSCH elements;
-
+    cout << "                                 \n";
+    //tb.printStack();
     //1.vector<vector<vector<string> > > scopes;
     if(typeScope=="Functions"){
         for(stackpositions;stackpositions>=0;stackpositions--){
-            if(tbtemp.at(stackpositions)->type == "RBRACE"){
+          //cout << "STACKPOSITIONS: \n"<<stackpositions<<"\n";
+            if(tbtemp.at(stackpositions)->tokenE == "RBRACE"){
                 scopevalue =tbtemp.at(stackpositions)->value1->value;
                 /*elements = tb.GetLastScope();
                 cout<< "Type: " <<elements->type << "\tToken: " <<elements->tokenE <<"\n";*/
-
+                //tb.printStack();
                 tb.Pop();
-                //scopes = SearchLocalVariables(tb,scopevalue);
+                cout << "-----------------------------------\n";
+                scopes = SearchLocalVariables(tb,scopevalue);
+                for(int i=0;i<scopes.size();i++){
+                    for(int y=0;y<scopes.at(i).size();y++){
+                        cout<< "Type: " <<scopes.at(i).at(y)->type << "\tToken: " <<scopes.at(i).at(y)->tokenE << "\tValue 1: " <<scopes.at(i).at(y)->value1->value<< "\tValue 2: " <<scopes.at(i).at(y)->value2->value<< "\tLine: " <<scopes.at(i).at(y)->rowE<< "\tColumn: " <<scopes.at(i).at(y)->columnE<<"\n";
+                    }
+                }
+                cout << "-----------------------------------\n";
+
                 /*elements = tb.GetLastScope();
                 cout << "ENTRE 1\n";
                 cout<< "Type: " <<elements->type << "\tToken: " <<elements->tokenE <<"\n";*/
@@ -374,10 +380,11 @@ void ScopeCheckingVariables(TablesStack &tb,string typeScope){
                 //1.scopes = DeleteOtherValues(scopes);
                 //1.scopes = DivideScopes(scopes);
                 //1.ChekingVariables(scopes);
-            }
-            if(tbtemp.at(stackpositions)->type != "RBRACE" && !tb.isEmpty()){
-                tb.Pop();
-                break;
+            }else{
+              if(tbtemp.at(stackpositions)->tokenE != "RBRACE" && !tb.isEmpty()){
+                  tb.Pop();
+              }
+
             }
 
         }
@@ -402,7 +409,6 @@ void ScopeCheckingVariables(TablesStack &tb,string typeScope){
             }
         }
     }*/
-
     printSemanticErrors();
 }
 
