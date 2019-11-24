@@ -1,7 +1,6 @@
-int y;
 int Hello(){
     int x;
-    int y;
+    \\int y;
     {
         y=8;
         {

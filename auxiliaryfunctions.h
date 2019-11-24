@@ -140,18 +140,20 @@ vector<vector<vector<string> > > SearchLocalVariablesClasses(TablesStack tb, str
     listscopes.push_back(intermediatescopes);
     return listscopes;
 }
-bool ChekingVariables(vector<vector<vector<string> > > listofscopes){
+*/
+void ChekingVariables(vector<vector<pElementSCH> > listofscopes){
     int positions = listofscopes.size()-1;
-    bool checkingresult = false;
-    vector<vector<string> > globalsdecl = listofscopes.at(0);
-    vector<vector<string> > localsdecl = listofscopes.at(1);
-    vector<vector<string> > globalsassign = listofscopes.at(2);
-    vector<vector<string> > localsassign = listofscopes.at(3);
-    vector<vector<string> > localtogloblalscope;
+    vector<pElementSCH> globalsdecl = listofscopes.at(0);
+    vector<pElementSCH> localsdecl = listofscopes.at(1);
+    vector<pElementSCH> globalsassign = listofscopes.at(2);
+    vector<pElementSCH> localsassign = listofscopes.at(3);
+    vector<pElementSCH> localtogloblalscope;
+
     int globalsdeclsize = globalsdecl.size()-1;
     int localsdeclsize = localsdecl.size()-1;
     int globalsassignsize = globalsassign.size()-1;
     int localsassignsize = localsassign.size()-1;
+    //TODO: REVISAR ESTO
     if(!globalsassign.empty()){
         bool variableonscope;
 
@@ -159,7 +161,7 @@ bool ChekingVariables(vector<vector<vector<string> > > listofscopes){
             variableonscope = false;
 
             for(int y=0;y<=globalsdeclsize;y++){
-                if(globalsassign.at(i).at(2)==globalsdecl.at(y).at(2)){
+                if(globalsassign.at(i)->value1->value==globalsdecl.at(y)->value1->value){
                     variableonscope = true;
                 }
             }
@@ -172,7 +174,7 @@ bool ChekingVariables(vector<vector<vector<string> > > listofscopes){
         for(int i=0;i<=localsassignsize;i++){
             variableonscope = false;
             for(int y=0;y<=localsdeclsize;y++){
-                if(localsassign.at(i).at(2)==localsdecl.at(y).at(2)){
+                if(localsassign.at(i)->value1->value==localsdecl.at(y)->value1->value){
                     variableonscope = true;
                 }
             }
@@ -187,20 +189,23 @@ bool ChekingVariables(vector<vector<vector<string> > > listofscopes){
         for(int i=0;i<=localtogloblalscopesize;i++){
             variableonscope = false;
             for(int y=0;y<=globalsdeclsize;y++){
-                if(localtogloblalscope.at(i).at(2)==globalsdecl.at(y).at(2)){
+                if(localtogloblalscope.at(i)->value1->value==globalsdecl.at(y)->value1->value){
                     variableonscope=true;
                     break;
                 }
             }
             if(variableonscope==false){
                 string error = " ";
-                error = "Undeclared variable: "+ localtogloblalscope.at(i).at(2)+" at column: "+localtogloblalscope.at(i).at(4)+" on line: "+localtogloblalscope.at(i).at(5)+"\n";
+                string variable = localtogloblalscope.at(i)->value1->value;
+                string column = to_string(localtogloblalscope.at(i)->columnE);
+                string row = to_string(localtogloblalscope.at(i)->rowE);
+                error = "Undeclared variable: "+ variable +" at column: "+ column +" on line: "+ row +"\n";
                 semanticerrors.push_back(error);
             }
         }
     }
 
-}*/
+}
 vector<vector<pElementSCH> > DivideScopes (vector<vector<pElementSCH> > listofscopes){
     int positions = listofscopes.size()-1;
     vector<vector<pElementSCH> > tempscopes;
@@ -342,68 +347,12 @@ void ScopeCheckingVariables(TablesStack &tb,string typeScope){
         for(stackpositions;stackpositions>=0;stackpositions--){
           //cout << "STACKPOSITIONS: \n"<<stackpositions<<"\n";
             if(tbtemp.at(stackpositions)->tokenE == "RBRACE"){
-                scopevalue =tbtemp.at(stackpositions)->value1->value;
-                /*elements = tb.GetLastScope();
-                cout<< "Type: " <<elements->type << "\tToken: " <<elements->tokenE <<"\n";*/
-                //tb.printStack();
+                scopevalue =tbtemp.at(stackpositions)->value1->value;;
                 tb.Pop();
-                //cout << "-----------------------------------\n";
                 scopes = SearchLocalVariables(tb,scopevalue);
-                /*cout << "------------BEFORE-----------------\n";
-                for(int i=0;i<scopes.size();i++){
-                    if(i==0){
-                        cout << "///////LOCALS///////\n";
-                    }
-                    if(i==1){
-                        cout << "///////GLOBALS///////\n";
-                    }
-                    for(int y=0;y<scopes.at(i).size();y++){
-                        cout<< "Type: " <<scopes.at(i).at(y)->type << "\tToken: " <<scopes.at(i).at(y)->tokenE << "\tValue 1: " <<scopes.at(i).at(y)->value1->value<< "\tValue 2: " <<scopes.at(i).at(y)->value2->value<< "\tLine: " <<scopes.at(i).at(y)->rowE<< "\tColumn: " <<scopes.at(i).at(y)->columnE<<"\n";
-                    }
-                }
-                cout << "-----------------------------------\n";*/
                 scopes = DeleteOtherValues(scopes);
-                /*cout << "---------------AFTER---------------\n";
-                for(int i=0;i<scopes.size();i++){
-                    if(i==0){
-                        cout << "///////LOCALS///////\n";
-                    }
-                    if(i==1){
-                        cout << "///////GLOBALS///////\n";
-                    }
-                    for(int y=0;y<scopes.at(i).size();y++){
-                        cout<< "Type: " <<scopes.at(i).at(y)->type << "\tToken: " <<scopes.at(i).at(y)->tokenE << "\tValue 1: " <<scopes.at(i).at(y)->value1->value<< "\tValue 2: " <<scopes.at(i).at(y)->value2->value<< "\tLine: " <<scopes.at(i).at(y)->rowE<< "\tColumn: " <<scopes.at(i).at(y)->columnE<<"\n";
-                    }
-                }
-                cout << "-----------------------------------\n";*/
                 scopes = DivideScopes(scopes);
-                cout << "---------------DIVIDESCOPES---------------\n";
-                for(int i=0;i<scopes.size();i++){
-                    if(i==0){
-                        cout << "///////GLOBAL DECL///////\n";
-                    }
-                    if(i==1){
-                        cout << "///////LOCAL DECL////////\n";
-                    }
-                    if(i==2){
-                        cout << "///////GLOBAL ASSIGN////////\n";
-                    }
-                    if(i==3 ){
-                        cout << "///////LOCAL ASSIGN////////\n";
-                    }
-                    for(int y=0;y<scopes.at(i).size();y++){
-                        cout<< "Type: " <<scopes.at(i).at(y)->type << "\tToken: " <<scopes.at(i).at(y)->tokenE << "\tValue 1: " <<scopes.at(i).at(y)->value1->value<< "\tValue 2: " <<scopes.at(i).at(y)->value2->value<< "\tLine: " <<scopes.at(i).at(y)->rowE<< "\tColumn: " <<scopes.at(i).at(y)->columnE<<"\n";
-                    }
-                }
-                cout << "-----------------------------------\n";
-                //ChekingVariables(scopes);
-                /*elements = tb.GetLastScope();
-                cout << "ENTRE 1\n";
-                cout<< "Type: " <<elements->type << "\tToken: " <<elements->tokenE <<"\n";*/
-                //1.scopes = SearchLocalVariables(tb,scopevalue);
-                //1.scopes = DeleteOtherValues(scopes);
-                //1.scopes = DivideScopes(scopes);
-                //1.ChekingVariables(scopes);
+                ChekingVariables(scopes);
             }else{
               if(tbtemp.at(stackpositions)->tokenE != "RBRACE" && !tb.isEmpty()){
                   tb.Pop();
@@ -435,6 +384,25 @@ void ScopeCheckingVariables(TablesStack &tb,string typeScope){
     }*/
     printSemanticErrors();
 }
-
+//Imprimir scopes
+/*cout << "---------------DIVIDESCOPES---------------\n";
+for(int i=0;i<scopes.size();i++){
+    if(i==0){
+        cout << "///////GLOBAL DECL///////\n";
+    }
+    if(i==1){
+        cout << "///////LOCAL DECL////////\n";
+    }
+    if(i==2){
+        cout << "///////GLOBAL ASSIGN////////\n";
+    }
+    if(i==3 ){
+        cout << "///////LOCAL ASSIGN////////\n";
+    }
+    for(int y=0;y<scopes.at(i).size();y++){
+        cout<< "Type: " <<scopes.at(i).at(y)->type << "\tToken: " <<scopes.at(i).at(y)->tokenE << "\tValue 1: " <<scopes.at(i).at(y)->value1->value<< "\tValue 2: " <<scopes.at(i).at(y)->value2->value<< "\tLine: " <<scopes.at(i).at(y)->rowE<< "\tColumn: " <<scopes.at(i).at(y)->columnE<<"\n";
+    }
+}
+cout << "-----------------------------------\n";*/
 
 #endif // AUXILIARYFUNCTIONS_H_INCLUDED
