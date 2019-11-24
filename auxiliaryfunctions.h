@@ -7,13 +7,41 @@
 
 
 vector<string> semanticerrors;
+vector<pElementSCH> undeclaredvariables;
 
+
+vector<pElementSCH> SortErrors(vector<pElementSCH> scope)
+{
+
+    for (int i = 1; i < scope.size(); ++i){
+        for (int j = 0; j < scope.size() - 1; ++j){
+            if (scope.at(j)->rowE > scope.at(i)->rowE) std::swap(scope.at(j), scope.at(i));
+        }
+    }
+    return scope;
+}
+vector<pElementSCH> PushErrors(vector<pElementSCH> scope)
+{
+    string error;
+    string variable;
+    string column;
+    string row;
+    for(int i=0;i<scope.size();i++){
+      variable = scope.at(i)->value1->value;
+      column = to_string(scope.at(i)->columnE);
+      row = to_string(scope.at(i)->rowE);
+      error = "Undeclared variable: "+ variable +" at column: "+ column +" on line: "+ row +"\n";
+      semanticerrors.push_back(error);
+    };
+}
 //Funcion que imprime los errores semanticos encontrados
 void printSemanticErrors(){
-    if(semanticerrors.empty()){
+    if(undeclaredvariables.empty()){
         cout << "Non errors found\n";
     }
     else{
+        undeclaredvariables=SortErrors(undeclaredvariables);
+        PushErrors(undeclaredvariables);
         for(int i=0;i<=semanticerrors.size()-1;i++){
             cout << semanticerrors.at(i);
         }
@@ -195,12 +223,13 @@ void ChekingVariables(vector<vector<pElementSCH> > listofscopes){
                 }
             }
             if(variableonscope==false){
-                string error = " ";
+                /*string error = " ";
                 string variable = localtogloblalscope.at(i)->value1->value;
                 string column = to_string(localtogloblalscope.at(i)->columnE);
                 string row = to_string(localtogloblalscope.at(i)->rowE);
                 error = "Undeclared variable: "+ variable +" at column: "+ column +" on line: "+ row +"\n";
-                semanticerrors.push_back(error);
+                semanticerrors.push_back(error);*/
+                undeclaredvariables.push_back(localtogloblalscope.at(i));
             }
         }
     }
@@ -340,7 +369,6 @@ void ScopeCheckingVariables(TablesStack &tb,string typeScope){
     int stackpositions = tbtemp.size()-1;
     string scopevalue = " ";
     pElementSCH elements;
-    cout << "                                 \n";
     //tb.printStack();
     //1.vector<vector<vector<string> > > scopes;
     if(typeScope=="Functions"){

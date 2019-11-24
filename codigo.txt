@@ -1,3 +1,4 @@
+\\int y;
 int Hello(){
     int x;
     \\int y;
