@@ -419,8 +419,8 @@ int main(int argcount, char **argvector)
     }
 	yyparse();
 	if (flagLexicalError == false && flagSintaxError == false){
-		printTable();
-		printTree(nodo);
+		//printTable();
+		//printTree(nodo);
 		semanticCheck(nodo);
 
 	}else{
@@ -473,7 +473,7 @@ void printTree(pNodeParseTree root){
 
 void printChilds(pNodeParseTree root, int tabs){
 	for(int i=root->childs.size()-1;i>=0;i--)
-    {		
+    {
 		//Agarra en hijo del parametro nodo root
 		pNodeParseTree child = root->childs.at(i);
 

@@ -1,8 +1,12 @@
-int Hello(){
-    if(True){
-        int a;
-		a=25+1;
-    }else{
-        Print("Hola Mundo");    
+int y;
+string Hello(){
+    y=6;
+    {
+      int x;
+      int y;
+      y=0;
     }
+}
+bool f(){
+
 }
