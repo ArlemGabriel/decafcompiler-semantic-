@@ -1,22 +1,18 @@
 int y;
-int Hello(){
-    int x;
-    int y;
+void Hello(){
+    y=6;
     {
-        y=8;
-        {
-            y=9;
-        }
+      int x;
+      int y;
+      y=5+4*x;
     }
-    y=8;
-    if(x==True){
-        int a;
-        a=25;
-    }
-    {
-        int k;
-        {
-            k=0;
-        }
-    }
+}
+
+int main(){
+	if(5+8==x){
+	}
+}
+
+bool f(){
+
 }

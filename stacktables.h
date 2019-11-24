@@ -98,6 +98,59 @@ public:
                 }
             }
         }
+        void SetBracesOwner(){
+          int stackpositions = GetStackSize()-1;
+          int sizebracestoclose;
+          int sizerbracepositions;
+          vector<pElementSCH> bracestoclose;
+          pElementSCH element;
+          vector<int> rbracepositions;
+          bool isIf;
+          bool isElse;
+          bool isWhile;
+          bool isFor;
+          bool isValueEqual;
+          bool isStructure;
+          for(stackpositions;stackpositions>=0;stackpositions--){
+                if(tablestack.at(stackpositions)->tokenE == "RBRACE"){
+                      element= new ElementSCH(tablestack.at(stackpositions)->type,tablestack.at(stackpositions)->tokenE, tablestack.at(stackpositions)->value1,tablestack.at(stackpositions)->value2,tablestack.at(stackpositions)->rowE,tablestack.at(stackpositions)->columnE);
+                      //tablestack.at(stackpositions)->tokenE = "RBRACE";
+                      element->tokenE = "LBRACE";
+                      bracestoclose.push_back(element);
+                      int pos = bracestoclose.size()-1;
+                      //cout << "BRACES TO CLOSE DESPUES:" << bracestoclose.at(pos)->tokenE<<"\n";
+                      rbracepositions.push_back(stackpositions);
+                      //[LBRACE,LBRACE]
+                      //[0,1]
+
+                }
+                if(!bracestoclose.empty() && tablestack.at(stackpositions)->tokenE =="LBRACE"){
+                      sizebracestoclose = bracestoclose.size()-1;
+                      sizerbracepositions = rbracepositions.size()-1;
+                      isIf = tablestack.at(stackpositions)->type == "IF";
+                      isElse = tablestack.at(stackpositions)->type == "ELSE";
+                      isWhile = tablestack.at(stackpositions)->type == "WHILE";
+                      isFor = tablestack.at(stackpositions)->type == "FOR";
+                      isValueEqual = tablestack.at(stackpositions)->value1->value==bracestoclose.at(sizebracestoclose)->value1->value;
+                      isStructure = (isIf || isElse || isWhile ||isFor);
+                      if(isValueEqual && isStructure){
+                            element= new ElementSCH(tablestack.at(stackpositions)->type,tablestack.at(stackpositions)->tokenE, tablestack.at(stackpositions)->value1,tablestack.at(stackpositions)->value2,tablestack.at(stackpositions)->rowE,tablestack.at(stackpositions)->columnE);
+                            //tablestack.at(stackpositions)->tokenE = "RBRACE";
+                            element->tokenE = "RBRACE";
+                            tablestack.at(rbracepositions.at(sizerbracepositions)) = element;
+                            //tablestack.at(stackpositions)->tokenE = "LBRACE";
+                            bracestoclose.pop_back();
+                            rbracepositions.pop_back();
+                            //tablestack.at(stackpositions)->tokenE = "ESTO ES CACA";
+
+                      }else{
+                            bracestoclose.pop_back();
+                            rbracepositions.pop_back();
+                      }
+
+                }
+          }
+        }
         //Funcion booleana que retorna si la pila esta vacia o no
         bool isEmpty(){
             if(GetStackSize()==0){
