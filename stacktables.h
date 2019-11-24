@@ -23,8 +23,12 @@ public:
         }
         //Funcion que imprime todos los elementos que hay en la pila
         void printStack(){
-          for(int i=0; i<tablestack.size();i++){
-            cout<< "Type: " <<tablestack.at(i)->type << " Token: " <<tablestack.at(i)->tokenE << " Value1: " <<tablestack.at(i)->value1->value << " Value2: " <<tablestack.at(i)->value2->value << " Column: " <<tablestack.at(i)->columnE <<" Line: " <<tablestack.at(i)->rowE <<"\n";
+          if(stacksize!=0){
+              for(int i=0; i<tablestack.size();i++){
+                cout<< "Type: " <<tablestack.at(i)->type << " Token: " <<tablestack.at(i)->tokenE << " Value1: " <<tablestack.at(i)->value1->value << " Value2: " <<tablestack.at(i)->value2->value << " Column: " <<tablestack.at(i)->columnE <<" Line: " <<tablestack.at(i)->rowE <<"\n";
+              }
+          }else{
+            cout << "PILA VACIA\n";
           }
         }
         //Funcion que saca el ultimo elemento ingresado en la pila

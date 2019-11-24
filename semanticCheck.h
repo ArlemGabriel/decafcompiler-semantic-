@@ -1,6 +1,7 @@
 #include "funcionesParser.h"
 #include "ElementSCH.h"
 #include "stacktables.h"
+#include "auxiliaryfunctions.h"
 
 
 typedef NodeParseTree * pNodeParseTree;
@@ -170,9 +171,9 @@ void searchRelevantNodes(pNodeParseTree root){
 	}
 }
 //Inserta en la pila los elementos para validar los scopes
-TablesStack insertScopesOnStack(string typeValidation){
+void insertScopesOnStack(string typeValidation,TablesStack &tb){
     //Valida la asignacion de variables locales y globales
-    TablesStack tb;
+    //TablesStack tb;
     if(typeValidation=="Functions"){
         for(int i=0; i<globalElementsForSemanticCheck.size();i++){
             tb.Push(globalElementsForSemanticCheck.at(i));
@@ -186,13 +187,15 @@ TablesStack insertScopesOnStack(string typeValidation){
     if(typeValidation=="Classes"){
         //TODO
     }
-    return tb;
 }
 void validateScopeFunctions(){
     TablesStack tb;
-    tb = insertScopesOnStack("Functions");
+    string typescope = "Functions";
+    insertScopesOnStack(typescope,tb);
     tb.SetBracesIndex();
-    tb.printStack();
+    //tb.printStack();
+    ScopeCheckingVariables(tb,typescope);
+    //tb.printStack();
 
     //tb.printStack();
     /*vector<pElementSCH> tablestack;
