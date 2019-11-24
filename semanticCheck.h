@@ -230,9 +230,19 @@ void ValidateScopeClasses(string typescope){
     ScopeCheckingVariables(tb,typescope);
 }
 void semanticCheck(pNodeParseTree root){
+
+
+
     searchRelevantNodes(root);
+    for(int i=0;i<elementsForSemanticCheck.size();i++){
+        cout<< "Type: " <<elementsForSemanticCheck.at(i)->type << "\tToken: " <<elementsForSemanticCheck.at(i)->tokenE << "\tValue 1: " <<elementsForSemanticCheck.at(i)->value1->value<< "\tValue 2: " <<elementsForSemanticCheck.at(i)->value2->value<< "\tLine: " <<elementsForSemanticCheck.at(i)->rowE<< "\tColumn: " <<elementsForSemanticCheck.at(i)->columnE<<"\n";
+    }
+    cout << "--------------------------------------------------------------\n";
+    for(int i=0;i<globalElementsForSemanticCheck.size();i++){
+        cout<< "Type: " <<globalElementsForSemanticCheck.at(i)->type << "\tToken: " <<globalElementsForSemanticCheck.at(i)->tokenE << "\tValue 1: " <<globalElementsForSemanticCheck.at(i)->value1->value<< "\tValue 2: " <<globalElementsForSemanticCheck.at(i)->value2->value<< "\tLine: " <<globalElementsForSemanticCheck.at(i)->rowE<< "\tColumn: " <<globalElementsForSemanticCheck.at(i)->columnE<<"\n";
+    }
     //Llamada para validar scopes en funciones y variables
-    ValidateScopeFunctions("Functions");
+    //ValidateScopeFunctions("Functions");
     //ValidateScopeClasses("Classes");
 
     //TODO empezar a revisar los nodos de globalElementsForSemanticCheck y elementsForSemanticCheck, y utilizar la pila de tablas
