@@ -16,83 +16,78 @@ private:
         int stacksize = 0;
         int scopescounter = 0;
 public:
+        //Funcion que hace push de un elemento en la pila
         void Push(pElementSCH pNode) {
             tablestack.push_back(pNode);
             stacksize=stacksize+1;
         }
+        //Funcion que imprime todos los elementos que hay en la pila
         void printStack(){
           for(int i=0; i<tablestack.size();i++){
             cout<< "Type: " <<tablestack.at(i)->type << " Token: " <<tablestack.at(i)->tokenE << " Value1: " <<tablestack.at(i)->value1->value << " Value2: " <<tablestack.at(i)->value2->value << " Column: " <<tablestack.at(i)->columnE <<" Line: " <<tablestack.at(i)->rowE <<"\n";
           }
         }
-
+        //Funcion que saca el ultimo elemento ingresado en la pila
         void Pop(){
-            tablestack.pop_back();
             if(stacksize>0){
+                tablestack.pop_back();
                 stacksize=stacksize-1;
             }
         }
-        /*
-        vector<vector<string> > GetLastScope(){
+        //Funcion que obtiene el ultimo scope ingresado en la pila
+        pElementSCH GetLastScope(){
             if(stacksize>0){
-                vector<vector<string> > scope;
+                pElementSCH scope;
                 scope = tablestack.at(stacksize-1);
                 return scope;
             }
         }
-        int GetTableScopesSize(vector<vector<string> > ptable){
-            int tempsize = ptable.size();
-            return tempsize;
-        }
-
+        //Funcion que obtiene el tamano actual de la pila
         int GetStackSize(){
             return stacksize;
         }
-        vector<vector<string> > GetScope(int position){
-            vector<vector<string> > scope;
-            scope = tablestack.at(position);
-            return scope;
+        /*
+        int GetTableScopesSize(vector<vector<string> > ptable){
+            int tempsize = ptable.size();
+            return tempsize;
+        }*/
+
+        //Funcion que obtiene un elemento de la pila dado un indice
+        pElementSCH GetScope(int position){
+            if(0<=position<stacksize){
+                pElementSCH scope;
+                scope = tablestack.at(position);
+                return scope;
+            }
         }
-        vector<vector<vector<string> > > GetTableStack(){
+        //Funcion que obtiene la pila
+        vector<pElementSCH> GetTableStack(){
             return tablestack;
         }
+        /*
         void SetGlobalScope(){
             globalscope = tablestack.at(0);
-        }
+        }*/
+        //Funcion que agrega los indices(numero de scope) a los BRACES
         void SetBracesIndex(){
             int stackindex = GetStackSize()-1;
             int scopecounter = 0;
             string strscopecounter;
             for(stackindex;stackindex>=0;stackindex--){
-                vector<vector<string> > scope;
-                scope = tablestack.at(stackindex);
-                for(int i=0;i<=scope.size()-1;i++){
-                    if(scope.at(i).at(1) == "RBRACE"){
-                        scopecounter=scopecounter+1;
-                        strscopecounter = to_string(scopecounter);
-                        scope.at(i).at(2) = strscopecounter;
-                        scopescounter = scopescounter+1;
-                    }
-                    if(scope.at(i).at(1) == "LBRACE"){
-                        strscopecounter = to_string(scopecounter);
-                        scopecounter=scopecounter-1;
-                        scope.at(i).at(2) = strscopecounter;
-                    }
+                if(tablestack.at(stackindex)->tokenE == "RBRACE"){
+                    scopecounter=scopecounter+1;
+                    strscopecounter = to_string(scopecounter);
+                    tablestack.at(stackindex)->value1->value = strscopecounter;
+                    scopescounter = scopescounter+1;
                 }
-                tablestack.at(stackindex) = scope;
-
-            }
-        }
-        void printStack(){
-            int stackindex = GetStackSize()-1;
-            for(stackindex;stackindex>=0;stackindex--){
-                vector<vector<string> > scope;
-                scope = tablestack.at(stackindex);
-                for(int i=0;i<=scope.size()-1;i++){
-                    cout << scope.at(i).at(1) << " Valor: "<< scope.at(i).at(2)<< "\n";
+                if(tablestack.at(stackindex)->tokenE == "LBRACE"){
+                    strscopecounter = to_string(scopecounter);
+                    scopecounter=scopecounter-1;
+                    tablestack.at(stackindex)->value1->value = strscopecounter;
                 }
             }
         }
+        //Funcion booleana que retorna si la pila esta vacia o no
         bool isEmpty(){
             if(GetStackSize()==0){
                 return true;
@@ -100,18 +95,21 @@ public:
                 return false;
             }
         }
-        vector<vector<vector<string> > > GetStackFromValue(int positionfrom){
-            vector<vector<vector<string> > > tempstacktable;
-            vector<vector<vector<string> > > tempstacktable2;
-            for(positionfrom;positionfrom>=0;positionfrom--){
+        //Funcion que obtiene una subpila desde una posicion inicial
+        vector<pElementSCH> GetStackFromValue(int positionfrom){
+            vector<pElementSCH> tempstacktable;
+            for(int i=0;i<=positionfrom;i++){
+                tempstacktable.push_back(tablestack.at(i));
+            }
+            /*for(positionfrom;positionfrom>=0;positionfrom--){
                 tempstacktable.push_back(tablestack.at(positionfrom));
             }
             int position = tempstacktable.size()-1;
             for(position;position>=0;position--){
                 tempstacktable2.push_back(tempstacktable.at(position));
-            }
-            return tempstacktable2;
-        }*/
+            }*/
+            return tempstacktable;
+        }
 
 };
 

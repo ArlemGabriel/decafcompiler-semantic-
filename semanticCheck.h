@@ -170,10 +170,10 @@ void searchRelevantNodes(pNodeParseTree root){
 	}
 }
 //Inserta en la pila los elementos para validar los scopes
-void insertScopesOnStack(string typeValidation){
+TablesStack insertScopesOnStack(string typeValidation){
     //Valida la asignacion de variables locales y globales
+    TablesStack tb;
     if(typeValidation=="Functions"){
-        TablesStack tb;
         for(int i=0; i<globalElementsForSemanticCheck.size();i++){
             tb.Push(globalElementsForSemanticCheck.at(i));
         }
@@ -181,15 +181,36 @@ void insertScopesOnStack(string typeValidation){
         for(int i=0; i<elementsForSemanticCheck.size();i++){
             tb.Push(elementsForSemanticCheck.at(i));
         }
-        tb.printStack();
     }
     //Valida los scopes de las clases
     if(typeValidation=="Classes"){
         //TODO
     }
+    return tb;
 }
 void validateScopeFunctions(){
-    insertScopesOnStack("Functions");
+    TablesStack tb;
+    tb = insertScopesOnStack("Functions");
+    tb.SetBracesIndex();
+    tb.printStack();
+
+    //tb.printStack();
+    /*vector<pElementSCH> tablestack;
+    tablestack = tb.GetTableStack();
+    for(int i=0; i<tablestack.size();i++){
+      cout<< "Type: " <<tablestack.at(i)->type << "\tToken: " <<tablestack.at(i)->tokenE << "\tValue1: " <<tablestack.at(i)->value1->value<<"\n";
+    }
+    cout << "\n";
+    tb.printStack();
+    pElementSCH elementssch;
+    elementssch = tb.GetScope(5);
+    cout<< "Type: " <<elementssch->type /*<< "\tToken: " <<globalElementsForSemanticCheck.at(i)->tokenE << "\tValue1: " <<globalElementsForSemanticCheck.at(i)->value1->value<<"\n";
+    int size = tb.GetStackSize();
+    cout << size;
+    tb.Pop();
+    elementssch = tb.GetLastScope();
+    cout<< "Type: " <<elementssch->type << "\tToken: " <<globalElementsForSemanticCheck.at(i)->tokenE << "\tValue1: " <<globalElementsForSemanticCheck.at(i)->value1->value<<"\n";*/
+
 }
 void semanticCheck(pNodeParseTree root){
     searchRelevantNodes(root);
