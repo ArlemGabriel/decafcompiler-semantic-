@@ -140,26 +140,7 @@ vector<vector<vector<string> > > SearchLocalVariablesClasses(TablesStack tb, str
     listscopes.push_back(intermediatescopes);
     return listscopes;
 }
-//Elimina aquellos valores que no son asignaciones o expresiones (declaracion de funciones etc)
-vector<vector<vector<string> > > DeleteOtherValues(vector<vector<vector<string> > > listofscopes){
-    int positions = listofscopes.size()-1;
-    vector<vector<vector<string> > > tempscopes;
-    vector<vector<string> > oldlist;
-    vector<vector<string> > newlist;
-    for(int y=0;y<=positions;y++){
-        oldlist = listofscopes.at(y);
-        int scopepositions = oldlist.size()-1;
-        newlist.clear();
-        for(int i =0;i<=scopepositions;i++){
-            if(oldlist.at(i).at(1)== "Exp" || oldlist.at(i).at(1) == "Variable"){
-                newlist.push_back(oldlist.at(i));
-            }
 
-        }
-        tempscopes.push_back(newlist);
-    }
-    return tempscopes;
-}
 vector<vector<vector<string> > > DivideScopes (vector<vector<vector<string> > > listofscopes){
     int positions = listofscopes.size()-1;
     vector<vector<vector<string> > > tempscopes;
@@ -265,6 +246,26 @@ bool ChekingVariables(vector<vector<vector<string> > > listofscopes){
     }
 
 }*/
+//Elimina aquellos valores que no son asignaciones o expresiones (declaracion de funciones etc)
+vector<vector<pElementSCH> > DeleteOtherValues(vector<vector<pElementSCH> > listofscopes){
+    int positions = listofscopes.size()-1;
+    vector<vector<pElementSCH> > tempscopes;
+    vector<pElementSCH> oldlist;
+    vector<pElementSCH>  newlist;
+    for(int y=0;y<=positions;y++){
+        oldlist = listofscopes.at(y);
+        int scopepositions = oldlist.size()-1;
+        newlist.clear();
+        for(int i =0;i<=scopepositions;i++){
+            if(oldlist.at(i)->tokenE== "Exp" || oldlist.at(i)->tokenE == "Variable"){
+                newlist.push_back(oldlist.at(i));
+            }
+
+        }
+        tempscopes.push_back(newlist);
+    }
+    return tempscopes;
+}
 vector<pElementSCH> SearchGlobalVariables(vector<pElementSCH> tb){
     int stackpositions = tb.size()-1;
     vector<pElementSCH> globaldecl;
@@ -281,7 +282,7 @@ vector<pElementSCH> SearchGlobalVariables(vector<pElementSCH> tb){
                       bracestoclose.pop_back();
                 }
           }
-          if(bracestoclose.empty() && tb.at(stackpositions)->tokenE=="Variable"){
+          if(bracestoclose.empty()){
                 globaldecl.push_back(tb.at(stackpositions));
           }
     }
@@ -297,7 +298,7 @@ vector<vector<pElementSCH> > SearchLocalVariables(TablesStack &tb, string scopev
     string finalscopevalue;
     vector<vector<pElementSCH> > listscopes;
     vector<pElementSCH> locals;
-    vector<pElementSCH> globaldecl;
+    vector<pElementSCH> globals;
     vector<pElementSCH> bracestoclose;
 
     for(stackpositions;stackpositions>=0;stackpositions--){
@@ -327,10 +328,9 @@ vector<vector<pElementSCH> > SearchLocalVariables(TablesStack &tb, string scopev
     //listofscopes: lista que guarda las asignaciones y declaraciones tanto globales como locales.
 
     vector<pElementSCH> globalscopevariables = tb.GetStackFromValue(finalscopeposition);
-    globaldecl = SearchGlobalVariables(globalscopevariables);
-    //vector<pElementSCH> tablestack
+    globals = SearchGlobalVariables(globalscopevariables);
     listscopes.push_back(locals);
-    listscopes.push_back(globaldecl);
+    listscopes.push_back(globals);
     return listscopes;
 }
 
@@ -355,6 +355,21 @@ void ScopeCheckingVariables(TablesStack &tb,string typeScope){
                 tb.Pop();
                 cout << "-----------------------------------\n";
                 scopes = SearchLocalVariables(tb,scopevalue);
+                cout << "------------BEFORE-----------------\n";
+                for(int i=0;i<scopes.size();i++){
+                    if(i==0){
+                        cout << "///////LOCALS///////\n";
+                    }
+                    if(i==1){
+                        cout << "///////GLOBALS///////\n";
+                    }
+                    for(int y=0;y<scopes.at(i).size();y++){
+                        cout<< "Type: " <<scopes.at(i).at(y)->type << "\tToken: " <<scopes.at(i).at(y)->tokenE << "\tValue 1: " <<scopes.at(i).at(y)->value1->value<< "\tValue 2: " <<scopes.at(i).at(y)->value2->value<< "\tLine: " <<scopes.at(i).at(y)->rowE<< "\tColumn: " <<scopes.at(i).at(y)->columnE<<"\n";
+                    }
+                }
+                cout << "-----------------------------------\n";
+                scopes = DeleteOtherValues(scopes);
+                cout << "---------------AFTER---------------\n";
                 for(int i=0;i<scopes.size();i++){
                     if(i==0){
                         cout << "///////LOCALS///////\n";
