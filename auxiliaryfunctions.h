@@ -83,9 +83,6 @@ vector<pElementSCH> SortDecl(vector<pElementSCH> declarations){
             }
         }
     }
-    for(int i=0;i<declarationssort.size();i++){
-        cout << "Name: " << declarationssort.at(i)->value1->value<<"\n";
-    }
     return declarationssort;
 
 }
@@ -97,12 +94,10 @@ void ChekingRepeatVariableDeclarations(vector<vector<pElementSCH> > listofscopes
   int globalsdeclsize = globalsdecl.size()-1;
   pElementSCH element;
   if(!globalsdecl.empty()){
-        cout << "-----GLOBALS---\n";
         // STL function to sort the array of string
         //sort(globalsdecl.begin(), globalsdecl.end());
 
         globalsdecl=SortDecl(globalsdecl);
-        cout << "-----GLOBALS---\n";
         for (int i = 1; i<globalsdecl.size(); i++){
             if (globalsdecl.at(i-1)->value1->value == globalsdecl.at(i)->value1->value) {
                   //cout << "-----ENTRE---\n";
@@ -112,9 +107,7 @@ void ChekingRepeatVariableDeclarations(vector<vector<pElementSCH> > listofscopes
 
   }
   if(!localsdecl.empty()){
-        cout << "-----LOCALS---\n";
         localsdecl=SortDecl(localsdecl);
-        cout << "-----LOCALS---\n";
 
         for (int i = 1; i<localsdecl.size(); i++){
             if (localsdecl.at(i-1)->value1->value == localsdecl.at(i)->value1->value) {
@@ -398,6 +391,8 @@ void ScopeCheckingVariables(TablesStack &tb,string typeScope){
                 scopes = DeleteOtherValues(scopes);
                 scopes = DivideScopes(scopes);
                 ChekingVariables(scopes);
+                //Validar si hay declaraciones repetidas en un scope
+                ChekingRepeatVariableDeclarations(scopes);
             }else{
               if(tbtemp.at(stackpositions)->tokenE != "RBRACE" && !tb.isEmpty()){
                   tb.Pop();
@@ -427,8 +422,6 @@ void ScopeCheckingVariables(TablesStack &tb,string typeScope){
 
       }
     }
-    //Validar si hay declaraciones repetidas en un scope
-    ChekingRepeatVariableDeclarations(scopes);
     printSemanticErrors();
 }
 //Imprimir scopes
