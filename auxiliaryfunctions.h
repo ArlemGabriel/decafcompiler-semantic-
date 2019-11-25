@@ -62,6 +62,8 @@ void printSemanticErrors(){
               repeatdeclaredvariables=SortErrors(repeatdeclaredvariables);
               PushErrors(repeatdeclaredvariables,"Repeated");
         }
+        //sort(semanticerrors.begin(), namevariables.end());
+        semanticerrors.erase(unique(semanticerrors.begin(), semanticerrors.end()), semanticerrors.end());
         for(int i=0;i<=semanticerrors.size()-1;i++){
             cout << semanticerrors.at(i);
         }
