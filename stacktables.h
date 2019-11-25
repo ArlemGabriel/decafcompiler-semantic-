@@ -9,7 +9,8 @@
 using namespace std;
 typedef ElementSCH * pElementSCH;
 
-class TablesStack{
+class TablesStack
+{
 private:
         std::vector<pElementSCH> tablestack;
         std::vector<pElementSCH> globalscope;

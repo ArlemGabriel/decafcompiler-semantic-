@@ -11,6 +11,11 @@ vector<string> semanticerrors;
 vector<pElementSCH> undeclaredvariables;
 vector<pElementSCH> repeatdeclaredvariables;
 
+vector<pElementSCH> assignsvariables;
+vector<pElementSCH> globalsassign;
+vector<pElementSCH> localsassign;
+vector<pElementSCH> localtogloblalscope;
+
 
 vector<pElementSCH> SortErrors(vector<pElementSCH> scope)
 {
@@ -22,6 +27,19 @@ vector<pElementSCH> SortErrors(vector<pElementSCH> scope)
     }
     return scope;
 }
+
+void PrintSCSElements(){
+    assignsvariables.erase(unique(assignsvariables.begin(), assignsvariables.end()), assignsvariables.end());
+    if(!assignsvariables.empty()){
+        cout << "-------------localtogloblalscope-----------------\n";
+        for(int i=0;i<assignsvariables.size();i++){
+            cout<< "Type: " <<assignsvariables.at(i)->type << "\tToken: " <<assignsvariables.at(i)->tokenE << "\tValue 1: " <<assignsvariables.at(i)->value1->value<< "\tValue 2: " <<assignsvariables.at(i)->value2->value<< "\tLine: " <<assignsvariables.at(i)->rowE<< "\tColumn: " <<assignsvariables.at(i)->columnE<<"\n";
+        }
+        cout << "-----------------------------------\n";
+    }
+
+}
+
 vector<pElementSCH> PushErrors(vector<pElementSCH> scope, string typeError)
 {
     string error;
@@ -124,9 +142,9 @@ void ChekingVariables(vector<vector<pElementSCH> > listofscopes){
     int positions = listofscopes.size()-1;
     vector<pElementSCH> globalsdecl = listofscopes.at(0);
     vector<pElementSCH> localsdecl = listofscopes.at(1);
-    vector<pElementSCH> globalsassign = listofscopes.at(2);
-    vector<pElementSCH> localsassign = listofscopes.at(3);
-    vector<pElementSCH> localtogloblalscope;
+    globalsassign = listofscopes.at(2);
+    localsassign = listofscopes.at(3);
+
 
     int globalsdeclsize = globalsdecl.size()-1;
     int localsdeclsize = localsdecl.size()-1;
@@ -141,17 +159,26 @@ void ChekingVariables(vector<vector<pElementSCH> > listofscopes){
             for(int y=0;y<=globalsdeclsize;y++){
                 if(globalsassign.at(i)->value1->value==globalsdecl.at(y)->value1->value){
                     variableonscope = true;
+                    if(globalsdecl.at(y)->type!= ""){
+                        globalsassign.at(i)->value2->value = globalsdecl.at(y)->type;
+                        assignsvariables.push_back(globalsassign.at(i));
+                    }
                 }
             }
         }
     }
     if(!localsassign.empty()){
         bool variableonscope;
+
         for(int i=0;i<=localsassignsize;i++){
             variableonscope = false;
             for(int y=0;y<=localsdeclsize;y++){
                 if(localsassign.at(i)->value1->value==localsdecl.at(y)->value1->value){
                     variableonscope = true;
+                    if(localsdecl.at(y)->type!= ""){
+                        localsassign.at(i)->value2->value = localsdecl.at(y)->type;
+                        assignsvariables.push_back(localsassign.at(i));
+                    }
                 }
             }
             if(variableonscope==false){
@@ -166,6 +193,10 @@ void ChekingVariables(vector<vector<pElementSCH> > listofscopes){
             variableonscope = false;
             for(int y=0;y<=globalsdeclsize;y++){
                 if(localtogloblalscope.at(i)->value1->value==globalsdecl.at(y)->value1->value){
+                    if(globalsdecl.at(y)->type!= ""){
+                        localtogloblalscope.at(i)->value2->value = globalsdecl.at(y)->type;
+                        assignsvariables.push_back(localtogloblalscope.at(i));
+                    }
                     variableonscope=true;
                     break;
                 }
@@ -204,7 +235,7 @@ vector<vector<pElementSCH> > DivideScopes (vector<vector<pElementSCH> > listofsc
                 if(oldlist.at(i)->tokenE== "Expr"){
                     globalsassign.push_back(oldlist.at(i));
                 }
-                if(oldlist.at(i)->tokenE == "Variable"){
+                if(oldlist.at(i)->tokenE == "Variable" || oldlist.at(i)->tokenE == "FunctionDecl"){
                     globalsdecl.push_back(oldlist.at(i));
                 }
             }
@@ -227,7 +258,7 @@ vector<vector<pElementSCH> > DeleteOtherValues(vector<vector<pElementSCH> > list
         int scopepositions = oldlist.size()-1;
         newlist.clear();
         for(int i =0;i<=scopepositions;i++){
-            if(oldlist.at(i)->tokenE== "Expr" || oldlist.at(i)->tokenE == "Variable"){
+            if(oldlist.at(i)->tokenE== "Expr" || oldlist.at(i)->tokenE == "Variable" || oldlist.at(i)->tokenE == "FunctionDecl"){
                 newlist.push_back(oldlist.at(i));
             }
 
@@ -375,7 +406,7 @@ vector<vector<pElementSCH> > SearchLocalVariablesClasses(TablesStack &tb, string
     return listscopes;
 }
 //Valida las variables en scopes globales y locales
-void ScopeCheckingVariables(TablesStack &tb,string typeScope){
+vector<pElementSCH> ScopeCheckingVariables(TablesStack &tb,string typeScope){
     vector<pElementSCH> tbtemp = tb.GetTableStack();
     vector<vector<pElementSCH> > scopes;
     int stackpositions = tbtemp.size()-1;
@@ -395,6 +426,7 @@ void ScopeCheckingVariables(TablesStack &tb,string typeScope){
                 ChekingVariables(scopes);
                 //Validar si hay declaraciones repetidas en un scope
                 ChekingRepeatVariableDeclarations(scopes);
+                //PrintSCSElements();
             }else{
               if(tbtemp.at(stackpositions)->tokenE != "RBRACE" && !tb.isEmpty()){
                   tb.Pop();
@@ -403,6 +435,8 @@ void ScopeCheckingVariables(TablesStack &tb,string typeScope){
             }
 
         }
+        printSemanticErrors();
+        return assignsvariables;
     }
     if(typeScope=="Classes"){
       for(stackpositions;stackpositions>=0;stackpositions--){
@@ -423,9 +457,11 @@ void ScopeCheckingVariables(TablesStack &tb,string typeScope){
           }
 
       }
+      //return assignsvariables;
     }
-    printSemanticErrors();
 }
+
+
 //Imprimir scopes
 /*cout << "---------------DIVIDESCOPES---------------\n";
 for(int i=0;i<scopes.size();i++){

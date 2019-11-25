@@ -1,11 +1,11 @@
-int funcion(){
-    int x;
-}
-int x;
-int x;
-int funcion2(){
-    int x;
-    if(x==y){
+int y;
+void funcion(){
+    int y;
+    bool x;
+    y=8;
+    x=8;
+    if(x==False){
         int x;
+        x=0;
     }
 }
