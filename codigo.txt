@@ -1,9 +1,14 @@
 int y;
+<<<<<<< Updated upstream
 int Hello(){
+=======
+void Hello(){
+>>>>>>> Stashed changes
     y=6;
     {
       int x;
       int y;
+<<<<<<< Updated upstream
       int x;
       y=5+4*x+z;
     }

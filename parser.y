@@ -77,7 +77,7 @@ int yyerror(char *s);
 %nonassoc ID
 %nonassoc EQUAL
 %nonassoc LESSTHAN LESSEQUALTHAN GREATEREQUALTHAN GREATERTHAN
-%nonassoc VOID CLASS INTERFACE DOUBLE INT STRING BOOL
+%nonassoc TVOID CLASS INTERFACE DOUBLE INT STRING BOOL
 
 
 %%
@@ -124,7 +124,7 @@ FunctionDecl 	: Type ID LPAREN Formals RPAREN StmtBlock						{createNewListaChil
 					createNewNode("Formals","",yylineno,yycolumn);		addChildsToNode(1);		addNodeToChilds();
 					createNewNode("RPAREN","",yylineno,yycolumn);			addNodeToChilds();
 					createNewNode("StmtBlock","",yylineno,yycolumn);		addChildsToNode(0);		addNodeToChilds();}
-				| VOID ID LPAREN Formals RPAREN StmtBlock						{createNewListaChilds(); 	createNewNode("VOID","",yylineno,yycolumn);			addNodeToChilds();
+				| TVOID ID LPAREN Formals RPAREN StmtBlock						{createNewListaChilds(); 	createNewNode("TVOID","",yylineno,yycolumn);			addNodeToChilds();
 					createNewNode("ID",$2,yylineno,yycolumn);				addNodeToChilds();
 					createNewNode("LPAREN","",yylineno,yycolumn);			addNodeToChilds();
 					createNewNode("Formals","",yylineno,yycolumn);		addChildsToNode(1);		addNodeToChilds();
@@ -190,7 +190,7 @@ Prototype 		: Type ID LPAREN Formals RPAREN SEMICOLON Prototype				{createNewLis
 					createNewNode("RPAREN","",yylineno,yycolumn);			addNodeToChilds();
 					createNewNode("SEMICOLON","",yylineno,yycolumn);		addNodeToChilds();
 					createNewNode("Prototype","",yylineno,yycolumn);		addChildsToNode(0);		addNodeToChilds();}
-				| VOID ID LPAREN Formals RPAREN SEMICOLON Prototype				{createNewListaChilds(); 	createNewNode("VOID","",yylineno,yycolumn);			addNodeToChilds();
+				| TVOID ID LPAREN Formals RPAREN SEMICOLON Prototype				{createNewListaChilds(); 	createNewNode("TVOID","",yylineno,yycolumn);			addNodeToChilds();
 					createNewNode("ID",$2,yylineno,yycolumn);				addNodeToChilds();
 					createNewNode("LPAREN","",yylineno,yycolumn);			addNodeToChilds();
 					createNewNode("Formals","",yylineno,yycolumn);		addChildsToNode(1);		addNodeToChilds();
