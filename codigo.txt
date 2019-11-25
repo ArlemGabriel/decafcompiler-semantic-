@@ -4,6 +4,7 @@ int Hello(){
     {
       int x;
       int y;
+      int x;
       y=5+4*x;
     }
 }

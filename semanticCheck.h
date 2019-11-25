@@ -222,11 +222,11 @@ void ValidateScopeFunctions(string typescope){
     InsertScopesOnStack(typescope,tb);
     tb.SetBracesIndex();
     tb.SetBracesOwner();
-    //tb.printStack();
-    //cout << "--------------------------------------------------------------\n";
-    //cout << "--------------------------------------------------------------\n";
+    tb.printStack();
+    cout << "--------------------------------------------------------------\n";
+    cout << "--------------------------------------------------------------\n";
     tb.DeleteStructureBraces();
-    //tb.printStack();
+    tb.printStack();
     ScopeCheckingVariables(tb,typescope);
 }
 void ValidateScopeClasses(string typescope){

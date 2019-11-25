@@ -4,10 +4,12 @@
 #include <vector>
 #include "stacktables.h"
 #include "ElementSCH.h"
+#include <algorithm>
 
 
 vector<string> semanticerrors;
 vector<pElementSCH> undeclaredvariables;
+vector<pElementSCH> repeatdeclaredvariables;
 
 
 vector<pElementSCH> SortErrors(vector<pElementSCH> scope)
@@ -20,137 +22,109 @@ vector<pElementSCH> SortErrors(vector<pElementSCH> scope)
     }
     return scope;
 }
-vector<pElementSCH> PushErrors(vector<pElementSCH> scope)
+vector<pElementSCH> PushErrors(vector<pElementSCH> scope, string typeError)
 {
     string error;
     string variable;
     string column;
     string row;
-    for(int i=0;i<scope.size();i++){
-      variable = scope.at(i)->value1->value;
-      column = to_string(scope.at(i)->columnE);
-      row = to_string(scope.at(i)->rowE);
-      error = "Undeclared variable: "+ variable +" at column: "+ column +" on line: "+ row +"\n";
-      semanticerrors.push_back(error);
-    };
+    if(typeError=="Undeclared"){
+        for(int i=0;i<scope.size();i++){
+            variable = scope.at(i)->value1->value;
+            column = to_string(scope.at(i)->columnE);
+            row = to_string(scope.at(i)->rowE);
+            error = "Undeclared variable: "+ variable +" on line: "+ row +" at column: "+ column +"\n";
+            semanticerrors.push_back(error);
+        };
+    }
+    if(typeError=="Repeated"){
+        for(int i=0;i<scope.size();i++){
+            variable = scope.at(i)->value1->value;
+            column = to_string(scope.at(i)->columnE);
+            row = to_string(scope.at(i)->rowE);
+            error = "Redeclaration Of: "+ variable +" on line: "+ row +" at column: "+ column +"\n";
+            semanticerrors.push_back(error);
+        };
+    }
+
 }
 //Funcion que imprime los errores semanticos encontrados
 void printSemanticErrors(){
-    if(undeclaredvariables.empty()){
+    if(undeclaredvariables.empty() && repeatdeclaredvariables.empty()){
         cout << "No errors found\n";
     }
     else{
-        undeclaredvariables=SortErrors(undeclaredvariables);
-        PushErrors(undeclaredvariables);
+        if(!undeclaredvariables.empty()){
+              undeclaredvariables=SortErrors(undeclaredvariables);
+              PushErrors(undeclaredvariables,"Undeclared");
+        }
+        if(!repeatdeclaredvariables.empty()){
+              repeatdeclaredvariables=SortErrors(repeatdeclaredvariables);
+              PushErrors(repeatdeclaredvariables,"Repeated");
+        }
         for(int i=0;i<=semanticerrors.size()-1;i++){
             cout << semanticerrors.at(i);
         }
     }
-
-
 }
-
-/*bool SearchRepeats(string error){
-    bool searchresult = false;
-    if(!semanticerrors.empty()){
-        for(int i=0;i<=semanticerrors.size()-1;i++){
-            if(semanticerrors.at(i)==error){
-                searchresult = true;
+vector<pElementSCH> SortDecl(vector<pElementSCH> declarations){
+    vector<string> namevariables;
+    vector<int> positions;
+    vector<pElementSCH> declarationssort;
+    for(int i=0;i<declarations.size();i++){
+        namevariables.push_back(declarations.at(i)->value1->value);
+    }
+    sort(namevariables.begin(), namevariables.end());
+    namevariables.erase(unique(namevariables.begin(), namevariables.end()), namevariables.end());
+    for(int i=0;i<namevariables.size();i++){
+        for(int y=0;y<declarations.size();y++){
+            if(namevariables.at(i) == declarations.at(y)->value1->value){
+                declarationssort.push_back(declarations.at(y));
             }
         }
     }
-    return searchresult;
-}
-vector<vector<string> > SearchGlobalVariablesClasses(vector<vector<vector<string> > > tb,string scopevalue){
-    int stackpositions = tb.size()-1;
-    vector<vector<string> > tempscope;
-    vector<vector<string> > globaldecl;
-    vector<vector<string> > bracestoclose;
-    for(stackpositions;stackpositions>=0;stackpositions--){
-        tempscope = tb.at(stackpositions);
-        int scopepositions = tempscope.size()-1;
-        bool searchEnded = false;
-
-        for(int i =0;i<=scopepositions;i++){
-                if(tempscope.at(i).at(1) == "LBRACE" && tempscope.at(i).at(2)==scopevalue){
-                    searchEnded = true;
-                }
-                if(tempscope.at(i).at(1) == "RBRACE"){
-                    tempscope.at(i).at(1) = "LBRACE";
-                    bracestoclose.push_back(tempscope.at(i));
-                    tempscope.at(i).at(1) = "RBRACE";
-                }
-                if(!bracestoclose.empty() && tempscope.at(i).at(1)=="LBRACE"){
-                    int sizebracestoclose = bracestoclose.size()-1;
-                    if(tempscope.at(i).at(2)==bracestoclose.at(sizebracestoclose).at(2)){
-                        bracestoclose.pop_back();
-                    }
-                }
-                if(bracestoclose.empty() && tempscope.at(i).at(1)=="Variable"){
-                    globaldecl.push_back(tempscope.at(i));
-                }
-        }
-
+    for(int i=0;i<declarationssort.size();i++){
+        cout << "Name: " << declarationssort.at(i)->value1->value<<"\n";
     }
-    return globaldecl;
+    return declarationssort;
 
 }
-vector<vector<vector<string> > > SearchLocalVariablesClasses(TablesStack tb, string scopevalue){
-    int stackpositions = tb.GetStackSize()-1;
-    int finalscopeposition;
-    int newscopeglobalvalue;
-    string finalscopevalue;
-    vector<vector<vector<string> > > listscopes;
-    vector<vector<string> > tempscope;
-    vector<vector<string> > localdecl;
-    vector<vector<string> > globaldecl;
-    vector<vector<string> > bracestoclose;
-    vector<vector<string> > intermediatescopes;
-    vector<vector<vector<string> > > globalscopes;
 
-    for(stackpositions;stackpositions>=0;stackpositions--){
-        tempscope = tb.GetScope(stackpositions);
-        int scopepositions = tempscope.size()-1;
-        bool searchEnded = false;
+void ChekingRepeatVariableDeclarations(vector<vector<pElementSCH> > listofscopes){
+  vector<pElementSCH> globalsdecl = listofscopes.at(0);
+  vector<pElementSCH> localsdecl = listofscopes.at(1);
+  vector<pElementSCH> duplicates;
+  int globalsdeclsize = globalsdecl.size()-1;
+  pElementSCH element;
+  if(!globalsdecl.empty()){
+        cout << "-----GLOBALS---\n";
+        // STL function to sort the array of string
+        //sort(globalsdecl.begin(), globalsdecl.end());
 
-        for(int i =0;i<=scopepositions;i++){
-                if(tempscope.at(i).at(1) == "LBRACE" && tempscope.at(i).at(2)==scopevalue){
-                    finalscopeposition = stackpositions-1;
-                    newscopeglobalvalue = stoi(scopevalue)-1;
-                    finalscopevalue = to_string(newscopeglobalvalue);
-                    searchEnded = true;
-                }
-                if(tempscope.at(i).at(1) == "RBRACE"){
-                    tempscope.at(i).at(1) = "LBRACE";
-                    bracestoclose.push_back(tempscope.at(i));
-                    tempscope.at(i).at(1) = "RBRACE";
-                }
-                if(!bracestoclose.empty() && tempscope.at(i).at(1)=="LBRACE"){
-                    int sizebracestoclose = bracestoclose.size()-1;
-                    if(tempscope.at(i).at(2)==bracestoclose.at(sizebracestoclose).at(2)){
-                        bracestoclose.pop_back();
-                    }
-                }
-                if(bracestoclose.empty() && tempscope.at(i).at(1)=="Exp"){
-                    intermediatescopes.push_back(tempscope.at(i));
-                }
-                if(bracestoclose.empty() && tempscope.at(i).at(1)=="Variable"){
-                    localdecl.push_back(tempscope.at(i));
-                }
+        globalsdecl=SortDecl(globalsdecl);
+        cout << "-----GLOBALS---\n";
+        for (int i = 1; i<globalsdecl.size(); i++){
+            if (globalsdecl.at(i-1)->value1->value == globalsdecl.at(i)->value1->value) {
+                  //cout << "-----ENTRE---\n";
+                  repeatdeclaredvariables.push_back(globalsdecl[i-1]);
+            }
         }
-        if(searchEnded==true){
-            break;
-        }
-    }
-    vector<vector<vector<string> > > globalscopevariables = tb.GetStackFromValue(finalscopeposition);
-    globaldecl = SearchGlobalVariablesClasses(globalscopevariables,finalscopevalue);
 
-    listscopes.push_back(localdecl);
-    listscopes.push_back(globaldecl);
-    listscopes.push_back(intermediatescopes);
-    return listscopes;
+  }
+  if(!localsdecl.empty()){
+        cout << "-----LOCALS---\n";
+        localsdecl=SortDecl(localsdecl);
+        cout << "-----LOCALS---\n";
+
+        for (int i = 1; i<localsdecl.size(); i++){
+            if (localsdecl.at(i-1)->value1->value == localsdecl.at(i)->value1->value) {
+                  //cout << "-----ENTRE---\n";
+                  repeatdeclaredvariables.push_back(localsdecl[i-1]);
+            }
+        }
+  }
+
 }
-*/
 void ChekingVariables(vector<vector<pElementSCH> > listofscopes){
     int positions = listofscopes.size()-1;
     vector<pElementSCH> globalsdecl = listofscopes.at(0);
@@ -163,7 +137,6 @@ void ChekingVariables(vector<vector<pElementSCH> > listofscopes){
     int localsdeclsize = localsdecl.size()-1;
     int globalsassignsize = globalsassign.size()-1;
     int localsassignsize = localsassign.size()-1;
-    //TODO: REVISAR ESTO
     if(!globalsassign.empty()){
         bool variableonscope;
 
@@ -174,8 +147,6 @@ void ChekingVariables(vector<vector<pElementSCH> > listofscopes){
                 if(globalsassign.at(i)->value1->value==globalsdecl.at(y)->value1->value){
                     variableonscope = true;
                 }
-            }
-            if(variableonscope==false){
             }
         }
     }
@@ -205,12 +176,6 @@ void ChekingVariables(vector<vector<pElementSCH> > listofscopes){
                 }
             }
             if(variableonscope==false){
-                /*string error = " ";
-                string variable = localtogloblalscope.at(i)->value1->value;
-                string column = to_string(localtogloblalscope.at(i)->columnE);
-                string row = to_string(localtogloblalscope.at(i)->rowE);
-                error = "Undeclared variable: "+ variable +" at column: "+ column +" on line: "+ row +"\n";
-                semanticerrors.push_back(error);*/
                 undeclaredvariables.push_back(localtogloblalscope.at(i));
             }
         }
@@ -462,6 +427,8 @@ void ScopeCheckingVariables(TablesStack &tb,string typeScope){
 
       }
     }
+    //Validar si hay declaraciones repetidas en un scope
+    ChekingRepeatVariableDeclarations(scopes);
     printSemanticErrors();
 }
 //Imprimir scopes
