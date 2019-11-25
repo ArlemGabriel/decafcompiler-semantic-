@@ -221,18 +221,19 @@ void ValidateScopeFunctions(string typescope){
     TablesStack tb;
     InsertScopesOnStack(typescope,tb);
     tb.SetBracesIndex();
-    tb.printStack();
-    cout << "--------------------------------------------------------------\n";
-    cout << "--------------------------------------------------------------\n";
     tb.SetBracesOwner();
-    tb.printStack();
+    //tb.printStack();
+    //cout << "--------------------------------------------------------------\n";
+    //cout << "--------------------------------------------------------------\n";
+    tb.DeleteStructureBraces();
+    //tb.printStack();
     ScopeCheckingVariables(tb,typescope);
 }
 void ValidateScopeClasses(string typescope){
     TablesStack tb;
     InsertScopesOnStack(typescope,tb);
     tb.SetBracesIndex();
-    ScopeCheckingVariables(tb,typescope);
+    //ScopeCheckingVariables(tb,typescope);
 }
 void semanticCheck(pNodeParseTree root){
 

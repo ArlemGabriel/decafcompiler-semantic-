@@ -1,5 +1,5 @@
 int y;
-void Hello(){
+int Hello(){
     y=6;
     {
       int x;

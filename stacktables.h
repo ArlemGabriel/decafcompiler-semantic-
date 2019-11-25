@@ -13,6 +13,7 @@ class TablesStack{
 private:
         std::vector<pElementSCH> tablestack;
         std::vector<pElementSCH> globalscope;
+        std::vector<int> bracestructurepos;
         int stacksize = 0;
         int scopescounter = 0;
 public:
@@ -50,11 +51,7 @@ public:
         int GetStackSize(){
             return stacksize;
         }
-        /*
-        int GetTableScopesSize(vector<vector<string> > ptable){
-            int tempsize = ptable.size();
-            return tempsize;
-        }*/
+
 
         //Funcion que obtiene un elemento de la pila dado un indice
         pElementSCH GetScope(int position){
@@ -68,6 +65,7 @@ public:
         vector<pElementSCH> GetTableStack(){
             return tablestack;
         }
+        //Funcion que obtiene un elemento de la pila dado un indice
         pElementSCH at(int position){
             if(0<=position<stacksize){
                 pElementSCH scope;
@@ -75,11 +73,30 @@ public:
                 return scope;
             }
         }
-        /*
-        void SetGlobalScope(){
-            globalscope = tablestack.at(0);
-        }*/
-        //Funcion que agrega los indices(numero de scope) a los BRACES
+        //Funcion que ordena la lista de braces a borrar
+        void SortBraces(){
+
+            for (int i = 1; i < bracestructurepos.size(); ++i){
+                for (int j = 0; j < bracestructurepos.size() - 1; ++j){
+                    if (bracestructurepos.at(j) > bracestructurepos.at(i)) std::swap(bracestructurepos.at(j), bracestructurepos.at(i));
+                }
+            }
+        }
+        //Funcion que borra un brace que es parte de una estructura IF,ELSE,WHILE,FOR
+        void DeleteBrace(int index){
+          tablestack.erase(tablestack.begin() + index);
+          stacksize=stacksize-1;
+        }
+        //Funcion que borra los braces que son parte de una estructura IF,ELSE,WHILE,FOR
+        void DeleteStructureBraces(){
+            int bracestructurepossize = bracestructurepos.size()-1;
+            SortBraces();
+            for(bracestructurepossize;0<=bracestructurepossize;bracestructurepossize--){
+                int value = bracestructurepos.at(bracestructurepossize);
+                DeleteBrace(value);
+            }
+        }
+        //FUncion que pone indices de los scopes a los BRACES
         void SetBracesIndex(){
             int stackindex = GetStackSize()-1;
             int scopecounter = 0;
@@ -98,6 +115,7 @@ public:
                 }
             }
         }
+        //Funcion que pone a los braces faltantes si son parte de una estructura IF,ELSE,WHILE,FOR
         void SetBracesOwner(){
           int stackpositions = GetStackSize()-1;
           int sizebracestoclose;
@@ -114,15 +132,10 @@ public:
           for(stackpositions;stackpositions>=0;stackpositions--){
                 if(tablestack.at(stackpositions)->tokenE == "RBRACE"){
                       element= new ElementSCH(tablestack.at(stackpositions)->type,tablestack.at(stackpositions)->tokenE, tablestack.at(stackpositions)->value1,tablestack.at(stackpositions)->value2,tablestack.at(stackpositions)->rowE,tablestack.at(stackpositions)->columnE);
-                      //tablestack.at(stackpositions)->tokenE = "RBRACE";
                       element->tokenE = "LBRACE";
                       bracestoclose.push_back(element);
                       int pos = bracestoclose.size()-1;
-                      //cout << "BRACES TO CLOSE DESPUES:" << bracestoclose.at(pos)->tokenE<<"\n";
                       rbracepositions.push_back(stackpositions);
-                      //[LBRACE,LBRACE]
-                      //[0,1]
-
                 }
                 if(!bracestoclose.empty() && tablestack.at(stackpositions)->tokenE =="LBRACE"){
                       sizebracestoclose = bracestoclose.size()-1;
@@ -135,19 +148,16 @@ public:
                       isStructure = (isIf || isElse || isWhile ||isFor);
                       if(isValueEqual && isStructure){
                             element= new ElementSCH(tablestack.at(stackpositions)->type,tablestack.at(stackpositions)->tokenE, tablestack.at(stackpositions)->value1,tablestack.at(stackpositions)->value2,tablestack.at(stackpositions)->rowE,tablestack.at(stackpositions)->columnE);
-                            //tablestack.at(stackpositions)->tokenE = "RBRACE";
                             element->tokenE = "RBRACE";
                             tablestack.at(rbracepositions.at(sizerbracepositions)) = element;
-                            //tablestack.at(stackpositions)->tokenE = "LBRACE";
+                            bracestructurepos.push_back(stackpositions);
+                            bracestructurepos.push_back(rbracepositions.at(sizerbracepositions));
                             bracestoclose.pop_back();
                             rbracepositions.pop_back();
-                            //tablestack.at(stackpositions)->tokenE = "ESTO ES CACA";
-
                       }else{
                             bracestoclose.pop_back();
                             rbracepositions.pop_back();
                       }
-
                 }
           }
         }
@@ -165,13 +175,6 @@ public:
             for(int i=0;i<=positionfrom;i++){
                 tempstacktable.push_back(tablestack.at(i));
             }
-            /*for(positionfrom;positionfrom>=0;positionfrom--){
-                tempstacktable.push_back(tablestack.at(positionfrom));
-            }
-            int position = tempstacktable.size()-1;
-            for(position;position>=0;position--){
-                tempstacktable2.push_back(tempstacktable.at(position));
-            }*/
             return tempstacktable;
         }
 
