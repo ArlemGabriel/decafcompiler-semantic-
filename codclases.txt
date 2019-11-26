@@ -1,0 +1,27 @@
+class Persona{
+    string cedula;
+    double peso;
+    double altura;
+    int edad;
+
+    int SetPeso(double pPeso){
+         peso = pPeso;
+         prueba = pPrueba;
+    }
+    double GetPeso(){
+        return peso;
+    }
+
+}
+
+class Estudiante{
+    string carnet;
+
+    int SetCarnet(double pCarnet){
+         carnet = pCarnet;
+    }
+    double GetCarnet(){
+        return carnet;
+    }
+
+}
