@@ -1,30 +1,48 @@
-void main() {
-  int addresult;
-  int subresult;
-  int multresult;
-  int divresult;
-  string str_a;
-  str_a = "Hola, Mundo!";
-  str_b = "Hola, Decaf!";
-  addresult = add(4, 5);
-  subresult = subtraction(5, 3);
-  multresult = multiplication(5,5);
-  divresult = division(4,2);
-  Print(str_a);
-  Print(addresult);
-  Print(subresult);
-  Print(multresult);
-  Print(divresult);
+int y;
+int x;
+int main() {
+    int x;
+    int y;
+    x=8;
+    y=5;
 }
-int add(int a, int b) {
-  return a + b;
+void Num (int a){
+    return a;
 }
-int subtraction(int a, int b) {
-  return a - b;
+void Sumar(){
+    int suma;
+    suma = x+y;
+    return;
 }
-int multiplication(int a, int b) {
-  return a * b;
+void Restar(int z,int w){
+    int resta;
+    int x;
+    return z+w+x;
 }
-int division(int a, int b) {
-  return a / b;
+
+/*class Persona{
+    string cedula;
+    double peso;
+    double altura;
+    int edad;
+
+    int SetPeso(double pPeso){
+         peso = pPeso;
+    }
+    double GetPeso(){
+        return peso;
+    }
+
 }
+
+class Estudiante Extends Persona{
+    string carnet;
+
+    int SetCarnet(double pCarnet){
+         carnet = pCarnet;
+    }
+    double GetCarnet(){
+        return carnet;
+    }
+
+}*/
