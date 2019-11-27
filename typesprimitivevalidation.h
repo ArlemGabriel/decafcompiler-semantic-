@@ -50,14 +50,27 @@ void PutTypesOnSTack(TablesStack &tb,vector<pElementSCH> assignsvariables){
 void GetFunctionsAndReturn(TablesStack &tb){
     int tbsize = tb.GetStackSize()-1;
     for(tbsize;tbsize>=0;tbsize--){
+      /*cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+      cout<< "Type: " <<tb.at(tbsize)->type<<"\n";
+      cout<<"\tToken: " <<tb.at(tbsize)->tokenE<<"\n";
+      cout<< "\tValue 1: " <<tb.at(tbsize)->value1->value<<"\n";
+      cout<< "\tValue 2: " <<tb.at(tbsize)->value2->value<<"\n";
+      cout<< "\tLine: " <<tb.at(tbsize)->rowE<<"\n";
+      cout<< "\tColumn: " <<tb.at(tbsize)->columnE<<"\n";
+      cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";*/
         if(tb.at(tbsize)->tokenE == "FunctionDecl"){
             onlyFuncRet.push_back(tb.at(tbsize));
+            /*cout << "DECISION TOMADA: FUNCTIONDECL\n";*/
         }
-        if(tb.at(tbsize)->tokenE == "Return"){
-            onlyFuncRet.push_back(tb.at(tbsize));
-            if(tbsize>0){
-                if(tb.at(tbsize)->tokenE == "Variable"){
-                    onlyFuncRet.push_back(tb.at(tbsize-1));
+        if(tb.at(tbsize)->tokenE == "RETURN"){
+          /*  cout << "DECISION TOMADA: RETURN\n";*/
+            if(tbsize>0==true){
+                if(tb.at(tbsize+1)->tokenE == "Expr"){
+                    /*cout << "DECISION TOMADA: EXPRESION\n";*/
+                    onlyFuncRet.push_back(tb.at(tbsize));
+                    onlyFuncRet.push_back(tb.at(tbsize+1));
+                }else{
+                    onlyFuncRet.push_back(tb.at(tbsize));
                 }
             }
         }
@@ -71,10 +84,10 @@ void CreateSublists(){
             if(onlyFuncRet.at(counter)->tokenE == "FunctionDecl"){
                 sublist.push_back(onlyFuncRet.at(counter));
             }
-            if(onlyFuncRet.at(counter)->tokenE == "Return"){
+            if(onlyFuncRet.at(counter)->tokenE == "RETURN"){
                 sublist.push_back(onlyFuncRet.at(counter));
             }
-            if(onlyFuncRet.at(counter)->tokenE == "Variable"){
+            if(onlyFuncRet.at(counter)->tokenE == "Expr"){
                 sublist.push_back(onlyFuncRet.at(counter));
             }
             onlyFuncRet.pop_back();
@@ -85,12 +98,12 @@ void CreateSublists(){
                 onlyFuncRet.pop_back();
                 counter=counter-1;
             }
-            if(onlyFuncRet.at(counter)->tokenE == "Return"){
+            if(onlyFuncRet.at(counter)->tokenE == "RETURN"){
                 sublist.push_back(onlyFuncRet.at(counter));
                 onlyFuncRet.pop_back();
                 counter=counter-1;
             }
-            if(onlyFuncRet.at(counter)->tokenE == "Variable"){
+            if(onlyFuncRet.at(counter)->tokenE == "Expr"){
                 sublist.push_back(onlyFuncRet.at(counter));
                 onlyFuncRet.pop_back();
                 counter=counter-1;
@@ -175,16 +188,16 @@ void TypesCheckingPrimitiveVariables(TablesStack &tb,vector<pElementSCH> assigns
         }*/
         //Funcion para crear sublistas con funcion,return y variable [F1,R1,V1] o [F1,R1] o [F1]
         CreateSublists();
-        /*for(int y=0;y<functionslist.size();y++){
+        for(int y=0;y<functionslist.size();y++){
             int sizesublist = functionslist.at(y).size()-1;
             cout << "SIZE:" << sizesublist;
             for(int i=0;i<=sizesublist;i++){
                 cout<< "Type: " <<functionslist.at(y).at(i)->type << "\tToken: " <<functionslist.at(y).at(i)->tokenE << "\tValue 1: " <<functionslist.at(y).at(i)->value1->value<< "\tValue 2: " <<functionslist.at(y).at(i)->value2->value<< "\tLine: " <<functionslist.at(y).at(i)->rowE<< "\tColumn: " <<functionslist.at(y).at(i)->columnE<<"\n";
             }
-        }*/
+        }
         //FUncion que valida si los tipos de las funciones y retorno son validos
         //Usando el vector de tipos primitivos y el vector de objetos.
-        ValidateCorrectTypes();
+        //ValidateCorrectTypes();
         //Funcion que una funcion retorne el tipo del que fue declarado.
         ValidateReturnTypes();
         PrintErrors();
