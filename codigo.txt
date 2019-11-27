@@ -1,11 +1,31 @@
-int y;
-void funcion(){
-    int x;
-    x = Sumar();
+class Persona{
+    string cedula;
+    double peso;
+    double altura;
+    int edad;
+
+    int SetPeso(double pPeso){
+         peso = pPeso;
+         prueba = pPrueba;
+    }
+    double GetPeso(){
+        return peso;
+    }
+
 }
 
-int Sumar(int x,int y){
-    int resultado;
-    resultado = x+y;
-    return resultado;
+class Estudiante{
+    string carnet;
+
+    int SetCarnet(double pCarnet){
+         int carnet;
+         carnet = pCarnet;
+    }
+    double GetCarnet(){
+        {
+            return hola;
+        }
+        return carnet;
+    }
+
 }
