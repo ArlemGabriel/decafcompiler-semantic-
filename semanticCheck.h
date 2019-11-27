@@ -4,6 +4,7 @@
 #include "ScopeChekingVariables.h"
 #include "ScopeCheckingVariablesClasses.h"
 #include "typesprimitivevalidation.h"
+#include "InheritanceStructure.h"
 
 
 typedef NodeParseTree * pNodeParseTree;
@@ -57,15 +58,15 @@ void searchRelevantNodes(pNodeParseTree root){
             tokenTMP=child->token;
             if(!flagClassScope)
                 flagGlobalScope=false;
-        }        
+        }
         else if(child->token=="CLASS"){
             flagGlobalScope=false;
             flagClassScope=true;
-            tokenTMP=child->token;            
+            tokenTMP=child->token;
         }
         else if(flagClassScope==true && tokenTMP=="CLASS"){
             newElement= new ElementSCH(tokenTMP,child->token, child,value2,child->row,child->column);
-            classElementsForSemanticCheck.push_back(newElement);            
+            classElementsForSemanticCheck.push_back(newElement);
             restartVariables();
         }
         else if(child->token=="Variable"|| child->token=="Expr" || child->token=="Constant"){
@@ -85,22 +86,22 @@ void searchRelevantNodes(pNodeParseTree root){
             tokenToAdd=child->token;
             newElement= new ElementSCH(tokenToAdd,tokenToAdd, child,value2,child->row,child->column);
             if(flagClassScope)
-                classElementsForSemanticCheck.push_back(newElement);            
+                classElementsForSemanticCheck.push_back(newElement);
             else
-                elementsForSemanticCheck.push_back(newElement);                        
+                elementsForSemanticCheck.push_back(newElement);
             restartVariables();
         }
-        else if((child->token=="Call" || child->token=="Formals" || child->token=="EXTENDS" || child->token=="NEW" || child->token=="NEWARRAY") && tokenToAdd!="NEW")  {          
-            value2=child;        
+        else if((child->token=="Call" || child->token=="Formals" || child->token=="EXTENDS" || child->token=="NEW" || child->token=="NEWARRAY") && tokenToAdd!="NEW")  {
+            value2=child;
             if(child->token=="NEW")
                 tokenToAdd=child->token;
             if(value2->token=="Formals")
                 isFormals=true;
         }
         else if(flagClassScope){
-            if((child->token=="Type" || child->token=="TVOID") && elementValuePosition==0 && (tokenTMP=="Variable" || tokenTMP=="FunctionDecl")){             
-                if(child->token!= "TVOID"){  
-                    skipChilds = true;                
+            if((child->token=="Type" || child->token=="TVOID") && elementValuePosition==0 && (tokenTMP=="Variable" || tokenTMP=="FunctionDecl")){
+                if(child->token!= "TVOID"){
+                    skipChilds = true;
                     if(child->childs.at(0)->token=="ID")
                         type=child->childs.at(0)->value;
                     else
@@ -125,7 +126,7 @@ void searchRelevantNodes(pNodeParseTree root){
                 classElementsForSemanticCheck.push_back(newElement);
                 restartVariables();
             }
-            else if((tokenTMP=="Variable" || tokenTMP=="FunctionDecl")  && elementValuePosition==1 && child->token=="ID"){ 
+            else if((tokenTMP=="Variable" || tokenTMP=="FunctionDecl")  && elementValuePosition==1 && child->token=="ID"){
                 pNodeParseTree nodoTMP = value2;
 
                 value1=child;
@@ -142,7 +143,7 @@ void searchRelevantNodes(pNodeParseTree root){
                 restartVariables();
                 if(isFormals)
                     value2=nodoTMP;
-                
+
                 if(tokenToAdd=="NEW")
                     tokenToAdd="";
 
@@ -175,7 +176,7 @@ void searchRelevantNodes(pNodeParseTree root){
                 }
 
             }
-            /*else if((child->token=="EQUAL" || child->token=="EEQUAL" || child->token=="DISTINCT" ||  child->token=="AND" ||  child->token=="OR" ||  child->token=="NEGATION") && elementValuePosition==1){            
+            /*else if((child->token=="EQUAL" || child->token=="EEQUAL" || child->token=="DISTINCT" ||  child->token=="AND" ||  child->token=="OR" ||  child->token=="NEGATION") && elementValuePosition==1){
                 type=child->token;
                 newElement= new ElementSCH(type,"Expr", value1,value2,rowTMP,columnTMP);
                 classElementsForSemanticCheck.push_back(newElement);
@@ -190,7 +191,7 @@ void searchRelevantNodes(pNodeParseTree root){
             }
             else if (elementValuePosition==0 && child->token=="DIVISION" || child->token=="MODULE" || child->token=="LESSTHAN" || child->token=="LESSEQUALTHAN" || child->token=="GREATERTHAN" ||
                         child->token=="GREATEREQUALTHAN" || child->token=="SUM" || child->token=="SUBTRACTION" || child->token=="MULTIPLICATION" || child->token=="EEQUAL" ||
-                        child->token=="DISTINCT" ||  child->token=="AND" ||  child->token=="OR" ||  child->token=="NEGATION"){                
+                        child->token=="DISTINCT" ||  child->token=="AND" ||  child->token=="OR" ||  child->token=="NEGATION"){
                 tokenTMP=child->token;
                 rowTMP=child->row;
                 columnTMP=child->column;
@@ -209,19 +210,19 @@ void searchRelevantNodes(pNodeParseTree root){
             }//*/
             else if(elementValuePosition==0 && (child->token=="CONSINTEGERDEC" || child->token=="CONSINTEGERHEX" || child->token=="CONSDOUBLEDEC" || child->token=="CONSDOUBLECIEN" ||
                     child->token=="CONSSTRING" || child->token=="CONSBOOLEAN"  || child->token=="DISTINCT" ||  child->token=="AND" ||  child->token=="OR" ||  child->token=="NEGATION" ||
-                    child->token=="TNULL")){                
+                    child->token=="TNULL")){
                 value1=child;
                 type=child->token;
                 rowTMP=child->row;
                 columnTMP=child->column;
                 elementValuePosition=1;
-            } else if(child->token=="RPAREN"  && elementValuePosition==1 && tokenTMP=="Constant"){                
+            } else if(child->token=="RPAREN"  && elementValuePosition==1 && tokenTMP=="Constant"){
                 newElement= new ElementSCH(type,tokenToAdd, value1,value2,rowTMP,columnTMP);
                 classElementsForSemanticCheck.push_back(newElement);
                 tokenToAdd="";
                 restartVariables();
             }else if(elementValuePosition==1 && tokenTMP=="Expr" && (type=="CONSINTEGERDEC" || type=="CONSINTEGERHEX" || type=="CONSDOUBLEDEC" || type=="CONSDOUBLECIEN" ||
-                    type=="CONSSTRING" || type=="CONSBOOLEAN"  ||  type=="DISTINCT" ||  type=="AND" ||  type=="OR" ||  type=="NEGATION" ||   type=="TNULL")){                
+                    type=="CONSSTRING" || type=="CONSBOOLEAN"  ||  type=="DISTINCT" ||  type=="AND" ||  type=="OR" ||  type=="NEGATION" ||   type=="TNULL")){
                 value1=child;
                 newElement= new ElementSCH(type,tokenTMP, value1,value2,rowTMP,columnTMP);
                 classElementsForSemanticCheck.push_back(newElement);
@@ -252,10 +253,10 @@ void searchRelevantNodes(pNodeParseTree root){
         {
             flagGlobalScope=true;
         }
-        else{            
-            if((child->token=="Type" || child->token=="TVOID") && elementValuePosition==0 && (tokenTMP=="Variable" || tokenTMP=="FunctionDecl")){             
-                if(child->token!= "TVOID"){       
-                    skipChilds=true;             
+        else{
+            if((child->token=="Type" || child->token=="TVOID") && elementValuePosition==0 && (tokenTMP=="Variable" || tokenTMP=="FunctionDecl")){
+                if(child->token!= "TVOID"){
+                    skipChilds=true;
                     if(child->childs.at(0)->token=="ID")
                         type=child->childs.at(0)->value;
                     else
@@ -279,9 +280,9 @@ void searchRelevantNodes(pNodeParseTree root){
                 elementsForSemanticCheck.push_back(newElement);
                 restartVariables();
             }
-            else if((tokenTMP=="Variable" || tokenTMP=="FunctionDecl")  && elementValuePosition==1 && child->token=="ID"){                
+            else if((tokenTMP=="Variable" || tokenTMP=="FunctionDecl")  && elementValuePosition==1 && child->token=="ID"){
                 pNodeParseTree nodoTMP= value2;
-                    
+
                 value1=child;
                 newElement= new ElementSCH(type,tokenTMP, value1,value2,rowTMP,columnTMP);
                 elementsForSemanticCheck.push_back(newElement);
@@ -300,7 +301,7 @@ void searchRelevantNodes(pNodeParseTree root){
 
                 if(tokenToAdd=="NEW")
                     tokenToAdd="";
-            } 
+            }
             else if(((child->token=="ID" && tokenTMP=="Expr") || tokenTMP=="Constant") && elementValuePosition==0 ){
                 //cout<< "CCCCCCCCCCCCCCC\n";
                 pNodeParseTree childTMP= new NodeParseTree();
@@ -330,7 +331,7 @@ void searchRelevantNodes(pNodeParseTree root){
                 }
 
             }
-            /*else if((child->token=="EQUAL" || child->token=="EEQUAL" || child->token=="DISTINCT" ||  child->token=="AND" ||  child->token=="OR" ||  child->token=="NEGATION") && elementValuePosition==1){            
+            /*else if((child->token=="EQUAL" || child->token=="EEQUAL" || child->token=="DISTINCT" ||  child->token=="AND" ||  child->token=="OR" ||  child->token=="NEGATION") && elementValuePosition==1){
                 type=child->token;
                 newElement= new ElementSCH(type,"Expr", value1,value2,rowTMP,columnTMP);
                 elementsForSemanticCheck.push_back(newElement);
@@ -345,7 +346,7 @@ void searchRelevantNodes(pNodeParseTree root){
             }
             else if (elementValuePosition==0 && child->token=="DIVISION" || child->token=="MODULE" || child->token=="LESSTHAN" || child->token=="LESSEQUALTHAN" || child->token=="GREATERTHAN" ||
                         child->token=="GREATEREQUALTHAN" || child->token=="SUM" || child->token=="SUBTRACTION" || child->token=="MULTIPLICATION" || child->token=="EEQUAL" ||
-                        child->token=="DISTINCT" ||  child->token=="AND" ||  child->token=="OR" ||  child->token=="NEGATION"){                
+                        child->token=="DISTINCT" ||  child->token=="AND" ||  child->token=="OR" ||  child->token=="NEGATION"){
                 tokenTMP=child->token;
                 rowTMP=child->row;
                 columnTMP=child->column;
@@ -364,19 +365,19 @@ void searchRelevantNodes(pNodeParseTree root){
             }//*/
             else if(elementValuePosition==0 && (child->token=="CONSINTEGERDEC" || child->token=="CONSINTEGERHEX" || child->token=="CONSDOUBLEDEC" || child->token=="CONSDOUBLECIEN" ||
                     child->token=="CONSSTRING" || child->token=="CONSBOOLEAN"  || child->token=="DISTINCT" ||  child->token=="AND" ||  child->token=="OR" ||  child->token=="NEGATION" ||
-                    child->token=="TNULL")){                
+                    child->token=="TNULL")){
                 value1=child;
                 type=child->token;
                 rowTMP=child->row;
                 columnTMP=child->column;
                 elementValuePosition=1;
-            } else if(child->token=="RPAREN"  && elementValuePosition==1 && tokenTMP=="Constant"){                
+            } else if(child->token=="RPAREN"  && elementValuePosition==1 && tokenTMP=="Constant"){
                 newElement= new ElementSCH(type,tokenToAdd, value1,value2,rowTMP,columnTMP);
                 elementsForSemanticCheck.push_back(newElement);
                 tokenToAdd="";
                 restartVariables();
             }else if(elementValuePosition==1 && tokenTMP=="Expr" && (type=="CONSINTEGERDEC" || type=="CONSINTEGERHEX" || type=="CONSDOUBLEDEC" || type=="CONSDOUBLECIEN" ||
-                    type=="CONSSTRING" || type=="CONSBOOLEAN"  ||  type=="DISTINCT" ||  type=="AND" ||  type=="OR" ||  type=="NEGATION" ||   type=="TNULL")){                
+                    type=="CONSSTRING" || type=="CONSBOOLEAN"  ||  type=="DISTINCT" ||  type=="AND" ||  type=="OR" ||  type=="NEGATION" ||   type=="TNULL")){
                 value1=child;
                 newElement= new ElementSCH(type,tokenTMP, value1,value2,rowTMP,columnTMP);
                 elementsForSemanticCheck.push_back(newElement);
@@ -846,7 +847,8 @@ void semanticCheck(pNodeParseTree root){
 
     //Llamada para validar scopes en funciones y variables
     //ValidateScopeFunctions();
-    //ValidateScopeClasses();
+    ValidateScopeClasses();
+    CreateInheritanceStructure(listclassesmethods,listclassesattributes);
     //createSimulation();
     //ValidateTypes();
 
@@ -865,5 +867,3 @@ void semanticCheck(pNodeParseTree root){
         //TODO empezar a revisar los nodos de globalElementsForSemanticCheck y elementsForSemanticCheck, y utilizar la pila de tablas
     }
 }
-
-

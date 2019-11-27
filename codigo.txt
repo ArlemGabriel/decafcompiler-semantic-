@@ -34,3 +34,6 @@ class Estudiante extends Persona{
     }
 
 }
+class Estudiante{
+    string hola;
+}

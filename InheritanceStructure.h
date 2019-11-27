@@ -12,8 +12,23 @@ typedef ClassStructure * pClassStructure;
 pClassStructure newclass;
 vector<ClassStructure> classeslist;
 vector<pElementSCH > repeatclasses;
+vector<pElementSCH > onlyclasses;
 
 //vector<pElementSCH> undeclaredvariables;
+void PrintErrorsInheritanceStructure(){
+    if(!repeatclasses.empty()){
+
+      for(int i=0;i<repeatclasses.size();i++){
+          cout << "Redeclaration Class: ";
+          cout << repeatclasses.at(i)->type<<" ";
+          cout << repeatclasses.at(i)->tokenE<<" ";
+          cout << repeatclasses.at(i)->value1->value<<" ";
+          cout << repeatclasses.at(i)->value2->value<<" ";
+          cout << repeatclasses.at(i)->columnE<<" ";
+          cout << repeatclasses.at(i)->rowE<<"\n";
+      }
+    }
+}
 
 void CreateInheritanceStructure(vector<vector<pElementSCH > > listmethods, vector<vector<pElementSCH > > listattributes){
   vector<pElementSCH > newclassesfrommethods;
@@ -84,6 +99,7 @@ void CreateInheritanceStructure(vector<vector<pElementSCH > > listmethods, vecto
   if(repeatclasses.size()==1){
       finalrepeats.push_back(repeatclasses.at(0));
   }
+  repeatclasses=finalrepeats;
 
 
   withoutrepeats =SortDecl(withoutrepeats);
@@ -101,10 +117,11 @@ void CreateInheritanceStructure(vector<vector<pElementSCH > > listmethods, vecto
   if(withoutrepeats.size()==1){
       finalwithoutrepeats.push_back(withoutrepeats.at(0));
   }
+  onlyclasses = finalwithoutrepeats;
 
 
 
-  /*cout << "NEWCLASSSIZE:"<< finalrepeats.size()<<"\n";
+  cout << "NEWCLASSSIZE:"<< finalrepeats.size()<<"\n";
   for (int i = 0; i<finalrepeats.size(); i++){
     cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
     cout<< "Type: " <<finalrepeats.at(i)->type<<"\n";
@@ -125,7 +142,8 @@ void CreateInheritanceStructure(vector<vector<pElementSCH > > listmethods, vecto
     cout<< "\tLine: " <<finalwithoutrepeats.at(i)->rowE<<"\n";
     cout<< "\tColumn: " <<finalwithoutrepeats.at(i)->columnE<<"\n";
     cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
-  }*/
+  }
+  PrintErrorsInheritanceStructure();
 }
 vector<ClassStructure> GetInheritanceStructure(){
     return classeslist;
