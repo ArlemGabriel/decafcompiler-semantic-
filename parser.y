@@ -420,7 +420,7 @@ int main(int argcount, char **argvector)
 	yyparse();
 	if (flagLexicalError == false && flagSintaxError == false){
 		//printTable();
-		//printTree(nodo);
+		printTree(nodo);
 		semanticCheck(nodo);
 
 	}else{

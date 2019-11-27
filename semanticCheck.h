@@ -52,7 +52,6 @@ void searchRelevantNodes(pNodeParseTree root){
 
         if(child->token=="FunctionDecl"){
             tokenTMP=child->token;
-            tokenToAdd=tokenTMP;
             if(!flagClassScope)
                 flagGlobalScope=false;
         }        
@@ -79,7 +78,7 @@ void searchRelevantNodes(pNodeParseTree root){
             classElementsForSemanticCheck.push_back(newElement);
             tokenToAdd="";
             restartVariables();
-        }else if(child->token=="RETURN" || child->token=="PRINT" || child->token=="IF" || child->token=="FOR" || child->token=="WHILE"){
+        }else if(child->token=="RETURN" || child->token=="PRINT" || child->token=="ELSE" || child->token=="IF" || child->token=="FOR" || child->token=="WHILE"){
             tokenToAdd=child->token;
             newElement= new ElementSCH(tokenToAdd,tokenToAdd, child,value2,child->row,child->column);
             if(flagClassScope)
@@ -87,6 +86,10 @@ void searchRelevantNodes(pNodeParseTree root){
             else
                 elementsForSemanticCheck.push_back(newElement);                        
             restartVariables();
+        }
+        else if(child->token=="Call"){
+            cout<<"AAAAAAAAAAAAAAAA\n";
+            value2=child;
         }
         else if(flagClassScope){
             if((child->token=="Type" || child->token=="TVOID") && elementValuePosition==0 && (tokenTMP=="Variable" || tokenTMP=="FunctionDecl")){             
@@ -799,22 +802,22 @@ void semanticCheck(pNodeParseTree root){
     //createSimulation();
 
     //Llamada para validar scopes en funciones y variables
-    //ValidateScopeFunctions();
-    //ValidateScopeClasses();
+    ValidateScopeFunctions();
+    ValidateScopeClasses();
     //createSimulation();
-    //ValidateTypes();
+    ValidateTypes();
 
-    cout << "\n\nOtros\n";
+    /*cout << "\n\nOtros\n";
     for(int i=0;i<elementsForSemanticCheck.size();i++){
         cout<< "Type: " <<elementsForSemanticCheck.at(i)->type << "\tToken: " <<elementsForSemanticCheck.at(i)->tokenE << "\tValue 1: " <<elementsForSemanticCheck.at(i)->value1->value /*<< "\tValue 2: " <<elementsForSemanticCheck.at(i)->value2->value<< "\tLine: " <<elementsForSemanticCheck.at(i)->rowE<< "\tColumn: " <<elementsForSemanticCheck.at(i)->columnE*/<<"\n";
-    }
+    /*}
     cout << "\n\nGlobal\n";
     for(int i=0;i<globalElementsForSemanticCheck.size();i++){
         cout<< "Type: " <<globalElementsForSemanticCheck.at(i)->type << "\tToken: " <<globalElementsForSemanticCheck.at(i)->tokenE << "\tValue 1: " <<globalElementsForSemanticCheck.at(i)->value1->value/*<< "\tValue 2: " <<globalElementsForSemanticCheck.at(i)->value2->value<< "\tLine: " <<globalElementsForSemanticCheck.at(i)->rowE<< "\tColumn: " <<globalElementsForSemanticCheck.at(i)->columnE*/<<"\n";
-    }
+    /*}
     cout << "\n\nClases\n";//*/
-    for(int i=0;i<classElementsForSemanticCheck.size();i++){
-        cout<< "Type: " <<classElementsForSemanticCheck.at(i)->type << "\tToken: " <<classElementsForSemanticCheck.at(i)->tokenE << "\tValue 1: " <<classElementsForSemanticCheck.at(i)->value1->value/*<< "\tValue 2: " <<classElementsForSemanticCheck.at(i)->value2->value<< "\tLine: " <<classElementsForSemanticCheck.at(i)->rowE<< "\tColumn: " <<classElementsForSemanticCheck.at(i)->columnE*/<<"\n";
+    /*for(int i=0;i<classElementsForSemanticCheck.size();i++){
+        cout<< "Type: " <<classElementsForSemanticCheck.at(i)->type << "\tToken: " <<classElementsForSemanticCheck.at(i)->tokenE << "\tValue 1: " <<classElementsForSemanticCheck.at(i)->value1->value<< "\tValue 2: " <<classElementsForSemanticCheck.at(i)->value2->token/*<< "\tLine: " <<classElementsForSemanticCheck.at(i)->rowE<< "\tColumn: " <<classElementsForSemanticCheck.at(i)->columnE*/<<"\n";
     //*/
         //TODO empezar a revisar los nodos de globalElementsForSemanticCheck y elementsForSemanticCheck, y utilizar la pila de tablas
     }

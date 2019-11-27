@@ -12,7 +12,7 @@ class Persona{
          prueba = pPrueba;
     }
     double GetPeso(){
-        return peso;
+        return obtenerPeso();
     }
 
 }
