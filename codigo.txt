@@ -5,6 +5,9 @@ class Persona{
     int edad;
 
     int SetPeso(double pPeso){
+	if(True){
+        	int a;
+    	}
          peso = pPeso;
          prueba = pPrueba;
     }

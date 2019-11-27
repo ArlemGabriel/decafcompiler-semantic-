@@ -52,6 +52,7 @@ void searchRelevantNodes(pNodeParseTree root){
 
         if(child->token=="FunctionDecl"){
             tokenTMP=child->token;
+            tokenToAdd=tokenTMP;
             if(!flagClassScope)
                 flagGlobalScope=false;
         }        
@@ -65,8 +66,9 @@ void searchRelevantNodes(pNodeParseTree root){
             classElementsForSemanticCheck.push_back(newElement);            
             restartVariables();
         }
-        else if(child->token=="Variable"|| child->token=="Expr"  || child->token=="RETURN" || child->token=="Constant")
+        else if(child->token=="Variable"|| child->token=="Expr" || child->token=="Constant"){
             tokenTMP=child->token;
+        }
         else if((child->token=="RBRACE" || child->token=="LBRACE") && !flagClassScope){
             newElement= new ElementSCH(tokenToAdd,child->token, value1,value2,child->row,child->column);
             elementsForSemanticCheck.push_back(newElement);
@@ -79,6 +81,12 @@ void searchRelevantNodes(pNodeParseTree root){
             restartVariables();
         }else if(child->token=="RETURN" || child->token=="PRINT" || child->token=="IF" || child->token=="FOR" || child->token=="WHILE"){
             tokenToAdd=child->token;
+            newElement= new ElementSCH(tokenToAdd,tokenToAdd, child,value2,child->row,child->column);
+            if(flagClassScope)
+                classElementsForSemanticCheck.push_back(newElement);            
+            else
+                elementsForSemanticCheck.push_back(newElement);                        
+            restartVariables();
         }
         else if(flagClassScope){
             if((child->token=="Type" || child->token=="TVOID") && elementValuePosition==0 && (tokenTMP=="Variable" || tokenTMP=="FunctionDecl")){             
