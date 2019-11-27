@@ -1,11 +1,11 @@
 int y;
 void funcion(){
-    int y;
-    bool x;
-    y=8;
-    x=8;
-    if(x==False){
-        int x;
-        x=0;
-    }
+    int x;
+    x = Sumar();
+}
+
+int Sumar(int x,int y){
+    int resultado;
+    resultado = x+y;
+    return resultado;
 }

@@ -12,9 +12,14 @@ vector<pElementSCH> undeclaredvariables;
 vector<pElementSCH> repeatdeclaredvariables;
 
 vector<pElementSCH> assignsvariables;
+vector<vector<pElementSCH > > elementsi;
 vector<pElementSCH> globalsassign;
 vector<pElementSCH> localsassign;
 vector<pElementSCH> localtogloblalscope;
+
+vector<pElementSCH> functionsdeclaration;
+vector<pElementSCH> arraysdeclaration;
+vector<pElementSCH> classesdeclaration;
 
 
 vector<pElementSCH> SortErrors(vector<pElementSCH> scope)
@@ -318,7 +323,22 @@ vector<vector<pElementSCH> > SearchLocalVariables(TablesStack &tb, string scopev
             }
         }
         if(bracestoclose.empty() && tb.at(stackpositions)->tokenE=="Expr"){
-            locals.push_back(tb.at(stackpositions));
+
+            if(tb.at(stackpositions)->value2->value!="Func" && tb.at(stackpositions)->value2->value!="NewArray" && tb.at(stackpositions)->value2->value!="NewClass"){
+                //locals.push_back(tb.at(stackpositions));
+            }
+            //locals.push_back(tb.at(stackpositions));
+
+            /*Descomentar para probar cuando tenga la estructura de declaraciones
+            if(tb.at(stackpositions)->value2->value=="Func"){
+                functionsdeclaration.push_back(tb.at(stackpositions));
+            }
+            if(tb.at(stackpositions)->value2->value=="NewArray"){
+                arraysdeclaration.push_back(tb.at(stackpositions));
+            }
+            if(tb.at(stackpositions)->value2->value=="NewClass"){
+                classesdeclaration.push_back(tb.at(stackpositions));
+            }*/
         }
         if(bracestoclose.empty() && tb.at(stackpositions)->tokenE=="Variable"){
             locals.push_back(tb.at(stackpositions));
@@ -406,7 +426,7 @@ vector<vector<pElementSCH> > SearchLocalVariablesClasses(TablesStack &tb, string
     return listscopes;
 }
 //Valida las variables en scopes globales y locales
-vector<pElementSCH> ScopeCheckingVariables(TablesStack &tb,string typeScope){
+vector<vector<pElementSCH > > ScopeCheckingVariables(TablesStack &tb,string typeScope){
     vector<pElementSCH> tbtemp = tb.GetTableStack();
     vector<vector<pElementSCH> > scopes;
     int stackpositions = tbtemp.size()-1;
@@ -436,7 +456,8 @@ vector<pElementSCH> ScopeCheckingVariables(TablesStack &tb,string typeScope){
 
         }
         printSemanticErrors();
-        return assignsvariables;
+        elementsi.push_back(assignsvariables);
+        return elementsi;
     }
     if(typeScope=="Classes"){
       for(stackpositions;stackpositions>=0;stackpositions--){

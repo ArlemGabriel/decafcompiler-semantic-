@@ -10,46 +10,42 @@ using namespace std;
 
 typedef ElementSCH * pElementSCH;
 
-class SemanticError
+class ClassStructure
 {
 private:
-        string typeError;
-        pElementSCH variableError;
+        pElementSCH classname;
+        pElementSCH superclass;
+        vector<pElementSCH> classattributes;
+        vector<pElementSCH> classmethods;
 public:
-        /*SemanticError(){
-          typeError ="";
-          variableError = new ElementSCH;
+        ClassStructure(){
+            classname = new ElementSCH;
+            superclass = new ElementSCH;
         }
-        //Funcion que hace push de un elemento en la pila
-        SemanticError(string pTypeError,pElementSCH pVariableError)
-      	{
-      	   typeError = pTypeError;
-           variableError = pVariableError;
-      	}
-        string GetTypeError(){
-            return typeError;
+        void SetClassName(pElementSCH pClassname;){
+            classname = pClassname;
         }
-        string GetType(){
-            return variableError->type;
+        void SetSUperClass(pElementSCH pSuperClass;){
+            superclass = pSuperClass;
         }
-        string GetToken(){
-            return variableError->tokenE;
+        void SetClassAttributes(vector<pElementSCH> pClassattributes;){
+            classattributes = pClassattributes;
         }
-        string GetValue1(){
-            return variableError->value1->value;
+        void SetClassMetjods(vector<pElementSCH> pClassMethods;){
+            classMethods = pClassMethods;
         }
-        string GetValue2(){
-            return variableError->value2->value;
+        pElementSCH GetClassName(){
+            return classname;
         }
-        string GetRow(){
-            return to_string(variableError->rowE);
+        pElementSCH GetSuperClass(){
+            return superclass;
         }
-        string GetColumn(){
-            return to_string(variableError->columnE);
+        vector<pElementSCH> GetClassAttributes(){
+            return classattributes;
         }
-        pElementSCH GetVariableError(){
-            return variableError;
-        }*/
+        vector<pElementSCH> GetClassMethods(){
+            return classmethods;
+        }
 
 };
 
