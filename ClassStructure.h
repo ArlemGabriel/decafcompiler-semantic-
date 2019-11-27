@@ -22,17 +22,20 @@ public:
             classname = new ElementSCH;
             superclass = new ElementSCH;
         }
-        void SetClassName(pElementSCH pClassname;){
+        void SetClassName(pElementSCH pClassname){
             classname = pClassname;
         }
-        void SetSUperClass(pElementSCH pSuperClass;){
+        void SetSUperClass(pElementSCH pSuperClass){
             superclass = pSuperClass;
         }
-        void SetClassAttributes(vector<pElementSCH> pClassattributes;){
+        void SetClassAttributes(vector<pElementSCH> pClassattributes){
             classattributes = pClassattributes;
         }
-        void SetClassMetjods(vector<pElementSCH> pClassMethods;){
-            classMethods = pClassMethods;
+        void SetClassMetjods(vector<pElementSCH> pClassMethods){
+            classmethods = pClassMethods;
+        }
+        void InsertMethod(pElementSCH pMethod){
+            classmethods.push_back(pMethod);
         }
         pElementSCH GetClassName(){
             return classname;
