@@ -1,3 +1,7 @@
+void funcion(){
+	int a;
+}
+
 class Persona{
     string cedula;
     double peso;

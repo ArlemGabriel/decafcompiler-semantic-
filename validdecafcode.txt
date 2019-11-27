@@ -35,7 +35,7 @@ class Persona{
 
 }
 
-class Estudiante Extends Persona{
+class Estudiante extends Persona{
     string carnet;
 
     int SetCarnet(double pCarnet){
