@@ -6,7 +6,7 @@ int main() {
     x=8;
     y=5;
 }
-void Num (int a){
+int Num (int a){
     return a;
 }
 void Sumar(){
@@ -14,13 +14,13 @@ void Sumar(){
     suma = x+y;
     return;
 }
-void Restar(int z,int w){
+int Restar(int z,int w){
     int resta;
     int x;
-    return z+w+x;
+    return x;
 }
 
-/*class Persona{
+class Persona{
     string cedula;
     double peso;
     double altura;
@@ -45,4 +45,4 @@ class Estudiante Extends Persona{
         return carnet;
     }
 
-}*/
+}

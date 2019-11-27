@@ -115,6 +115,7 @@ void ValidateReturnTypes(){
         if(functionslist.at(i).size()==1){
               //cout << "----------------1-------------------\n";
               if(functionslist.at(i).at(0)->type !="VOID"){
+                    //cout << "----------------1.1-------------------\n";
                    error = new SemanticError("MissingReturn",functionslist.at(i).at(0));
                    listsemanticerrors.push_back(error);
 
@@ -186,7 +187,7 @@ void TypesCheckingPrimitiveVariables(TablesStack &tb,vector<pElementSCH> assigns
         ValidateCorrectTypes();
         //Funcion que una funcion retorne el tipo del que fue declarado.
         ValidateReturnTypes();
-        //PrintErrors();
+        PrintErrors();
 
 
 
