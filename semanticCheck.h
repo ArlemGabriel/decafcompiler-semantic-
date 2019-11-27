@@ -22,6 +22,7 @@ vector<vector<pElementSCH > > listclassesmethods;
 
 bool flagGlobalScope=true;
 bool flagClassScope=false;
+bool isFormals=false;
 int elementValuePosition=0;
 string type;
 string tokenTMP;
@@ -43,9 +44,11 @@ void restartVariables(){
 }
 
 void searchRelevantNodes(pNodeParseTree root){
+    bool skipChilds;
 
     for(int i=0;i<root->childs.size();i++)
     {
+        skipChilds=false;
         //cout<<flagClassScope;
 		//Agarra en hijo del parametro nodo root
 		pNodeParseTree child = root->childs.at(i);
@@ -87,13 +90,17 @@ void searchRelevantNodes(pNodeParseTree root){
                 elementsForSemanticCheck.push_back(newElement);                        
             restartVariables();
         }
-        else if(child->token=="Call"){
-            cout<<"AAAAAAAAAAAAAAAA\n";
-            value2=child;
+        else if((child->token=="Call" || child->token=="Formals" || child->token=="EXTENDS" || child->token=="NEW" || child->token=="NEWARRAY") && tokenToAdd!="NEW")  {          
+            value2=child;        
+            if(child->token=="NEW")
+                tokenToAdd=child->token;
+            if(value2->token=="Formals")
+                isFormals=true;
         }
         else if(flagClassScope){
             if((child->token=="Type" || child->token=="TVOID") && elementValuePosition==0 && (tokenTMP=="Variable" || tokenTMP=="FunctionDecl")){             
-                if(child->token!= "TVOID"){                    
+                if(child->token!= "TVOID"){  
+                    skipChilds = true;                
                     if(child->childs.at(0)->token=="ID")
                         type=child->childs.at(0)->value;
                     else
@@ -111,7 +118,16 @@ void searchRelevantNodes(pNodeParseTree root){
 
                 elementValuePosition=1;
             }
-            else if((tokenTMP=="Variable" || tokenTMP=="FunctionDecl")  && elementValuePosition==1 && child->token=="ID"){                
+            else if(value2->token=="EXTENDS"){
+                value1=child;
+                type=child->token;
+                newElement= new ElementSCH(type,tokenTMP, value1,value2,child->row,child->column);
+                classElementsForSemanticCheck.push_back(newElement);
+                restartVariables();
+            }
+            else if((tokenTMP=="Variable" || tokenTMP=="FunctionDecl")  && elementValuePosition==1 && child->token=="ID"){ 
+                pNodeParseTree nodoTMP = value2;
+
                 value1=child;
                 newElement= new ElementSCH(type,tokenTMP, value1,value2,rowTMP,columnTMP);
                 classElementsForSemanticCheck.push_back(newElement);
@@ -124,6 +140,12 @@ void searchRelevantNodes(pNodeParseTree root){
                     classElementsForSemanticCheck.push_back(newElement);
                 }//*/
                 restartVariables();
+                if(isFormals)
+                    value2=nodoTMP;
+                
+                if(tokenToAdd=="NEW")
+                    tokenToAdd="";
+
             } else if(((child->token=="ID" && tokenTMP=="Expr") || tokenTMP=="Constant") && elementValuePosition==0 ){
                 //cout<< "CCCCCCCCCCCCCCC\n";
                 pNodeParseTree childTMP= new NodeParseTree();
@@ -159,6 +181,8 @@ void searchRelevantNodes(pNodeParseTree root){
                 classElementsForSemanticCheck.push_back(newElement);
                 restartVariables();
             }//*/
+            else if(child->token=="RPAREN" && elementValuePosition==0)
+                isFormals=false;
             else if(child->token=="RPAREN"  && elementValuePosition==1 && tokenTMP=="Expr"){
                 newElement= new ElementSCH(type,tokenTMP, value1,value2,rowTMP,columnTMP);
                 classElementsForSemanticCheck.push_back(newElement);
@@ -206,6 +230,7 @@ void searchRelevantNodes(pNodeParseTree root){
         }
          else if(flagGlobalScope){
             if((child->token=="Type") && elementValuePosition==0 && tokenTMP=="Variable"){
+                skipChilds=true;
                 if(child->childs.at(0)->token=="ID")
                     type=child->childs.at(0)->value;
                 else
@@ -229,7 +254,8 @@ void searchRelevantNodes(pNodeParseTree root){
         }
         else{            
             if((child->token=="Type" || child->token=="TVOID") && elementValuePosition==0 && (tokenTMP=="Variable" || tokenTMP=="FunctionDecl")){             
-                if(child->token!= "TVOID"){                    
+                if(child->token!= "TVOID"){       
+                    skipChilds=true;             
                     if(child->childs.at(0)->token=="ID")
                         type=child->childs.at(0)->value;
                     else
@@ -244,10 +270,18 @@ void searchRelevantNodes(pNodeParseTree root){
                     columnTMP=child->column;
                 }
 
-
                 elementValuePosition=1;
             }
+            else if(value2->token=="EXTENDS"){
+                value1=child;
+                type=child->token;
+                newElement= new ElementSCH(type,tokenTMP, value1,value2,child->row,child->column);
+                elementsForSemanticCheck.push_back(newElement);
+                restartVariables();
+            }
             else if((tokenTMP=="Variable" || tokenTMP=="FunctionDecl")  && elementValuePosition==1 && child->token=="ID"){                
+                pNodeParseTree nodoTMP= value2;
+                    
                 value1=child;
                 newElement= new ElementSCH(type,tokenTMP, value1,value2,rowTMP,columnTMP);
                 elementsForSemanticCheck.push_back(newElement);
@@ -260,7 +294,14 @@ void searchRelevantNodes(pNodeParseTree root){
                     elementsForSemanticCheck.push_back(newElement);
                 }//*/
                 restartVariables();
-            } else if(((child->token=="ID" && tokenTMP=="Expr") || tokenTMP=="Constant") && elementValuePosition==0 ){
+
+                if(isFormals)
+                    value2=nodoTMP;
+
+                if(tokenToAdd=="NEW")
+                    tokenToAdd="";
+            } 
+            else if(((child->token=="ID" && tokenTMP=="Expr") || tokenTMP=="Constant") && elementValuePosition==0 ){
                 //cout<< "CCCCCCCCCCCCCCC\n";
                 pNodeParseTree childTMP= new NodeParseTree();
                 if(i+1!=root->childs.size())
@@ -295,7 +336,9 @@ void searchRelevantNodes(pNodeParseTree root){
                 elementsForSemanticCheck.push_back(newElement);
                 restartVariables();
             }//*/
-            else if(child->token=="RPAREN"  && elementValuePosition==1 && tokenTMP=="Expr"){
+            else if(child->token=="RPAREN" && elementValuePosition==0)
+                isFormals=false;
+            else if(child->token=="RPAREN" && elementValuePosition==1 && tokenTMP=="Expr"){
                 newElement= new ElementSCH(type,tokenTMP, value1,value2,rowTMP,columnTMP);
                 elementsForSemanticCheck.push_back(newElement);
                 restartVariables();
@@ -342,7 +385,7 @@ void searchRelevantNodes(pNodeParseTree root){
         }
 
         //Si tiene otros hijos los busca
-		if(child->childs.size()>0)
+		if(child->childs.size()>0 && !skipChilds)
 			searchRelevantNodes(child);
 
 	}
@@ -802,21 +845,21 @@ void semanticCheck(pNodeParseTree root){
     //createSimulation();
 
     //Llamada para validar scopes en funciones y variables
-    ValidateScopeFunctions();
-    ValidateScopeClasses();
+    //ValidateScopeFunctions();
+    //ValidateScopeClasses();
     //createSimulation();
-    ValidateTypes();
+    //ValidateTypes();
 
-    /*cout << "\n\nOtros\n";
+    cout << "\n\nOtros\n";
     for(int i=0;i<elementsForSemanticCheck.size();i++){
         cout<< "Type: " <<elementsForSemanticCheck.at(i)->type << "\tToken: " <<elementsForSemanticCheck.at(i)->tokenE << "\tValue 1: " <<elementsForSemanticCheck.at(i)->value1->value /*<< "\tValue 2: " <<elementsForSemanticCheck.at(i)->value2->value<< "\tLine: " <<elementsForSemanticCheck.at(i)->rowE<< "\tColumn: " <<elementsForSemanticCheck.at(i)->columnE*/<<"\n";
-    /*}
+    }
     cout << "\n\nGlobal\n";
     for(int i=0;i<globalElementsForSemanticCheck.size();i++){
         cout<< "Type: " <<globalElementsForSemanticCheck.at(i)->type << "\tToken: " <<globalElementsForSemanticCheck.at(i)->tokenE << "\tValue 1: " <<globalElementsForSemanticCheck.at(i)->value1->value/*<< "\tValue 2: " <<globalElementsForSemanticCheck.at(i)->value2->value<< "\tLine: " <<globalElementsForSemanticCheck.at(i)->rowE<< "\tColumn: " <<globalElementsForSemanticCheck.at(i)->columnE*/<<"\n";
-    /*}
+    }
     cout << "\n\nClases\n";//*/
-    /*for(int i=0;i<classElementsForSemanticCheck.size();i++){
+    for(int i=0;i<classElementsForSemanticCheck.size();i++){
         cout<< "Type: " <<classElementsForSemanticCheck.at(i)->type << "\tToken: " <<classElementsForSemanticCheck.at(i)->tokenE << "\tValue 1: " <<classElementsForSemanticCheck.at(i)->value1->value<< "\tValue 2: " <<classElementsForSemanticCheck.at(i)->value2->token/*<< "\tLine: " <<classElementsForSemanticCheck.at(i)->rowE<< "\tColumn: " <<classElementsForSemanticCheck.at(i)->columnE*/<<"\n";
     //*/
         //TODO empezar a revisar los nodos de globalElementsForSemanticCheck y elementsForSemanticCheck, y utilizar la pila de tablas

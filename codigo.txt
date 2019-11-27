@@ -4,7 +4,9 @@ class Persona{
     double altura;
     int edad;
 
-    int SetPeso(double pPeso){
+    int SetPeso(double pPeso, int prueba){
+	a=NewArray(5,int);
+	p=New(persona);
 	if(True){
         	int a;
     	}
@@ -17,7 +19,7 @@ class Persona{
 
 }
 
-class Estudiante{
+class Estudiante extends Persona{
     string carnet;
 
     int SetCarnet(double pCarnet){
