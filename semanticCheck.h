@@ -90,8 +90,10 @@ void searchRelevantNodes(pNodeParseTree root){
                 elementsForSemanticCheck.push_back(newElement);                        
             restartVariables();
         }
-        else if(child->token=="Call" || child->token=="Formals" || child->token=="EXTENDS")  {          
+        else if((child->token=="Call" || child->token=="Formals" || child->token=="EXTENDS" || child->token=="NEW" || child->token=="NEWARRAY") && tokenToAdd!="NEW")  {          
             value2=child;        
+            if(child->token=="NEW")
+                tokenToAdd=child->token;
             if(value2->token=="Formals")
                 isFormals=true;
         }
@@ -140,6 +142,9 @@ void searchRelevantNodes(pNodeParseTree root){
                 restartVariables();
                 if(isFormals)
                     value2=nodoTMP;
+                
+                if(tokenToAdd=="NEW")
+                    tokenToAdd="";
 
             } else if(((child->token=="ID" && tokenTMP=="Expr") || tokenTMP=="Constant") && elementValuePosition==0 ){
                 //cout<< "CCCCCCCCCCCCCCC\n";
@@ -265,7 +270,6 @@ void searchRelevantNodes(pNodeParseTree root){
                     columnTMP=child->column;
                 }
 
-
                 elementValuePosition=1;
             }
             else if(value2->token=="EXTENDS"){
@@ -293,6 +297,9 @@ void searchRelevantNodes(pNodeParseTree root){
 
                 if(isFormals)
                     value2=nodoTMP;
+
+                if(tokenToAdd=="NEW")
+                    tokenToAdd="";
             } 
             else if(((child->token=="ID" && tokenTMP=="Expr") || tokenTMP=="Constant") && elementValuePosition==0 ){
                 //cout<< "CCCCCCCCCCCCCCC\n";

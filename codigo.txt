@@ -3,9 +3,10 @@ class Persona{
     double peso;
     double altura;
     int edad;
-	
 
     int SetPeso(double pPeso, int prueba){
+	a=NewArray(5,int);
+	p=New(persona);
 	if(True){
         	int a;
     	}
